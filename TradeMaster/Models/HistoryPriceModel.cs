@@ -44,7 +44,7 @@ public class CostLimits
     public RateTypes RateType { get; set; } 
     
     //в этой модели уже должен быть процентный коэффициент, который необходимо рассчитать при формировании этой модели
-    public double Rate { get; set; } =  100 - LowerCostBound / 
+    public decimal Rate { get; set; } = 100; //- LowerCostBound;
 }
 
 public enum RateTypes

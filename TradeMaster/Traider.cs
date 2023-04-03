@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using TradeMaster.Models;
+﻿using TradeMaster.Models;
 
 namespace TradeMaster;
 
@@ -44,7 +42,7 @@ public class Traider
         //Определяем поледнюю нижнюю стоимость в интервалах
         var lastLowerPrice = historyPriceModel.CostLimits.Max(cl => cl.LowerCostBound);
         //Определяем стоимость ордера на покупку
-        var buyOrderPrice = lastLowerPrice - (lastLowerPrice - 1%);
+        var buyOrderPrice = lastLowerPrice - (lastLowerPrice - lastLowerPrice/100);
 
 
         return 0;

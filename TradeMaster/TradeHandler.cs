@@ -7,10 +7,7 @@ public class TradeHandler
 {
     HistoryPriceModel GeneratePriceHistory()
     {
-        return new HistoryPriceModel()
-        {
-            
-        }
+        return new HistoryPriceModel();
     }
     
     
