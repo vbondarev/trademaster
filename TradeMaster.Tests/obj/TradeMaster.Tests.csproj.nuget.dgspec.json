@@ -1,36 +1,35 @@
 {
   "format": 1,
   "restore": {
-    "/Users/antonoskin/RiderProjects/TradeMaster/TradeMaster.Tests/TradeMaster.Tests.csproj": {}
+    "D:\\Work\\projects\\trademaster\\TradeMaster.Tests\\TradeMaster.Tests.csproj": {}
   },
   "projects": {
-    "/Users/antonoskin/RiderProjects/TradeMaster/TradeMaster.Tests/TradeMaster.Tests.csproj": {
+    "D:\\Work\\projects\\trademaster\\TradeMaster.Tests\\TradeMaster.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/antonoskin/RiderProjects/TradeMaster/TradeMaster.Tests/TradeMaster.Tests.csproj",
+        "projectUniqueName": "D:\\Work\\projects\\trademaster\\TradeMaster.Tests\\TradeMaster.Tests.csproj",
         "projectName": "TradeMaster.Tests",
-        "projectPath": "/Users/antonoskin/RiderProjects/TradeMaster/TradeMaster.Tests/TradeMaster.Tests.csproj",
-        "packagesPath": "/Users/antonoskin/.nuget/packages/",
-        "outputPath": "/Users/antonoskin/RiderProjects/TradeMaster/TradeMaster.Tests/obj/",
+        "projectPath": "D:\\Work\\projects\\trademaster\\TradeMaster.Tests\\TradeMaster.Tests.csproj",
+        "packagesPath": "C:\\Users\\bonda\\.nuget\\packages\\",
+        "outputPath": "D:\\Work\\projects\\trademaster\\TradeMaster.Tests\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "/Users/antonoskin/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\bonda\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
-          "https://api.nuget.org/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {},
+          "https://nuget.pkg.github.com/Verifika/index.json": {},
+          "https://nuget.pkg.github.com/vbondarev/index.json": {}
         },
         "frameworks": {
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "/Users/antonoskin/RiderProjects/TradeMaster/TradeMaster/TradeMaster.csproj": {
-                "projectPath": "/Users/antonoskin/RiderProjects/TradeMaster/TradeMaster/TradeMaster.csproj"
+              "D:\\Work\\projects\\trademaster\\TradeMaster\\TradeMaster.csproj": {
+                "projectPath": "D:\\Work\\projects\\trademaster\\TradeMaster\\TradeMaster.csproj"
               }
             }
           }
@@ -82,30 +81,29 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.400/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.402\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "/Users/antonoskin/RiderProjects/TradeMaster/TradeMaster/TradeMaster.csproj": {
+    "D:\\Work\\projects\\trademaster\\TradeMaster\\TradeMaster.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/antonoskin/RiderProjects/TradeMaster/TradeMaster/TradeMaster.csproj",
+        "projectUniqueName": "D:\\Work\\projects\\trademaster\\TradeMaster\\TradeMaster.csproj",
         "projectName": "TradeMaster",
-        "projectPath": "/Users/antonoskin/RiderProjects/TradeMaster/TradeMaster/TradeMaster.csproj",
-        "packagesPath": "/Users/antonoskin/.nuget/packages/",
-        "outputPath": "/Users/antonoskin/RiderProjects/TradeMaster/TradeMaster/obj/",
+        "projectPath": "D:\\Work\\projects\\trademaster\\TradeMaster\\TradeMaster.csproj",
+        "packagesPath": "C:\\Users\\bonda\\.nuget\\packages\\",
+        "outputPath": "D:\\Work\\projects\\trademaster\\TradeMaster\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "/Users/antonoskin/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\bonda\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
-          "https://api.nuget.org/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {},
+          "https://nuget.pkg.github.com/Verifika/index.json": {},
+          "https://nuget.pkg.github.com/vbondarev/index.json": {}
         },
         "frameworks": {
           "net6.0": {
@@ -138,7 +136,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.400/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.402\\RuntimeIdentifierGraph.json"
         }
       }
     }
