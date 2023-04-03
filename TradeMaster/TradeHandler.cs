@@ -21,7 +21,7 @@ public class TradeHandler
     /// <summary>
     /// Начало торговли
     /// </summary>
-    void StartTrading()
+    public void StartTrading()
     {
         var trendDefiner = new TrendHandler();
         var traider = new Traider();
@@ -39,6 +39,14 @@ public class TradeHandler
                 var buyPrice = traider.CalculateBuyOrderPrice(Trend.Bear, priceHistory);
                 //совершаем сделку через binanceConnector
                 var result = binanceConnector.BuyCoins(Coins.BTC);
+                
+                
+                
+                break;
+            case Trend.Bull:
+                break;
+            case Trend.Flat:
+                break;
         }
     }
 }
