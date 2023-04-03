@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeMaster", "TradeMaster\TradeMaster.csproj", "{569F65D7-1FF0-423B-806C-476337CE7B4E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeMaster.Tests", "TradeMaster.Tests\TradeMaster.Tests.csproj", "{013A1B89-8903-4D4B-8C44-D3BC08840DA4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{569F65D7-1FF0-423B-806C-476337CE7B4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{569F65D7-1FF0-423B-806C-476337CE7B4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{569F65D7-1FF0-423B-806C-476337CE7B4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{569F65D7-1FF0-423B-806C-476337CE7B4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{013A1B89-8903-4D4B-8C44-D3BC08840DA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{013A1B89-8903-4D4B-8C44-D3BC08840DA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{013A1B89-8903-4D4B-8C44-D3BC08840DA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{013A1B89-8903-4D4B-8C44-D3BC08840DA4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
