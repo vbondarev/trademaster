@@ -30,7 +30,7 @@ internal class BinanceConnector
     /// <summary>
     /// Метод для покупки криптовалюты на Binance
     /// </summary>
-    public bool BuyCoins(Coins coin, OrderTypes orderType, decimal price)
+    public bool BuyCoins(Coins coin, OrderTypes orderType, decimal price, decimal amount)
     {
         return true;
     }
@@ -38,11 +38,11 @@ internal class BinanceConnector
     /// <summary>
     /// Метод для продажи криптовалюты на Binance
     /// </summary>
-    public bool CellCoins(Coins coin, OrderTypes orderType, decimal price)
+    public bool CellCoins(Coins coin, OrderTypes orderType, decimal price, decimal amount)
     {
         return true;
     }
-
+    
     /// <summary>
     /// Получить максимальную стоимость в определенном интервале
     /// </summary>
@@ -75,5 +75,32 @@ internal class BinanceConnector
         };
     }
     
-    
+    /// <summary>
+    /// Получить общую сумму монет на спотовом аккаунте
+    /// </summary>
+    /// <returns></returns>
+    public decimal GetTotalAmount(Coins coin)
+    {
+        return 0;
+    }
+
+    /// <summary>
+    /// Проверка существования стоп-лимитного ордера на продажу
+    /// </summary>
+    /// <param name="coin"></param>
+    /// <returns></returns>
+    public bool CellStopLimitOrderCheck(Coins coin)
+    {
+        return true;
+    }
+
+    /// <summary>
+    /// Удаление существующего стоп-лимитного ордера на продажу
+    /// </summary>
+    /// <param name="btc"></param>
+    /// <returns></returns>
+    public bool DeleteCellStopLimitOrder(Coins btc)
+    {
+        return true;
+    }
 }

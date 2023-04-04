@@ -1,51 +1,75 @@
-﻿using TradeMaster.Models;
+﻿using TradeMaster.Binance;
+using TradeMaster.Models;
 
 namespace TradeMaster;
 
-public class Traider
+internal class Traider
 {
-    public int TestMethod( int a, int b)
-    {
-        return a + b;
-    }
+    private readonly BinanceConnector _binanceConnector;
+    private readonly TradeHandler _tradeHandler;
+    private readonly RiskManagementHandler _riskManagementHandler;
 
-    public decimal CalculateBuyOrderPrice(Trend trend, HistoryPriceModel historyPriceModel)
+    public Traider(BinanceConnector binanceConnector, TradeHandler tradeHandler, RiskManagementHandler riskManagementHandler)
     {
-        return trend switch
+        _binanceConnector = binanceConnector;
+        _tradeHandler = tradeHandler;
+        _riskManagementHandler = riskManagementHandler;
+    }
+    
+    //Разработать функционал по временным интервалам покупки
+    //Допустим будем производить следующую покупку через 30 секунд после продажи
+    //На текущий момент работаем только с биткойном
+
+    /// <summary>
+    /// Начало торговли
+    /// </summary>
+    public void StartTrading()
+    {
+        var trendDefiner = new TrendHandler();
+        
+        //Определяем тренд
+        var currentTrend = trendDefiner.DefineTrend();
+
+        switch (currentTrend)
         {
-            Trend.Bear => CalculateBearBuyOrderPrice(historyPriceModel),
-            Trend.Bull => CalculateBullBuyOrderPrice(historyPriceModel),
-            Trend.Flat => CalculateFlatBuyOrderPrice(historyPriceModel),
-            _ => 0
-        };
-    }
-
-    private decimal CalculateFlatBuyOrderPrice(HistoryPriceModel historyPriceModel)
-    {
-        return 0;
-    }
-
-    private decimal CalculateBullBuyOrderPrice(HistoryPriceModel historyPriceModel)
-    {
-        return 0;
-    }
-
-    private decimal CalculateBearBuyOrderPrice(HistoryPriceModel historyPriceModel)
-    {
-        //Определяем усредненное значение процентных процентных коэффициентов во временных интервалах
-        var averageRate = historyPriceModel.CostLimits.Average(cl => cl.Rate);
-        
-        //Определяем процентный коэффициент разницы между последней нижней стоимостью в 15-минутном интервале и ценой ордера на покупку
-        var resultEstimate = averageRate / historyPriceModel.IntervalCount;
-        
-        //Определяем поледнюю нижнюю стоимость в интервалах
-        //var lastLowerPrice = historyPriceModel.CostLimits.Max(cl => cl.LowerCostBound);
-        var lastLowerPrice = historyPriceModel.CostLimits.First(cl => cl.IntervalNumber == 1).LowerCostBound;
-        
-        //Определяем стоимость ордера на покупку
-        var buyOrderPrice = lastLowerPrice - (lastLowerPrice / 100 * (decimal)resultEstimate);
-
-        return buyOrderPrice;
+            case Trend.Bear:
+                //необходимо рассчитать сумму ордера
+                var orderAmount = _tradeHandler.CalculateOrderAmount(Coins.USDT);
+                
+                //формируем историю изменений цены
+                //пока что возьмем за образец сведения двухчасовой давности, но в дальнейшем
+                //необходимо либо брать эту информацию из конфиг файлов, либо определять автоматически, что более приоритетно
+                var priceHistory = _tradeHandler.GeneratePriceHistory(Coins.BTC, Interval.QuarterHour, 8);
+                
+                //необходимо рассчитать и создать стоп-лимит ордер на продажу
+                //стоп-лимит должен пересчитываться после каждого лимитного ордера на покупку
+                //на основе общего баланса и каждый предыдущий существующий должен отменяться
+                
+                //если существует стоп-лимитный ордер на продажу, отменяем его
+                //проверяем существование стоп-лимитного ордера на продажу
+                var isCellStopLimitOrderExist = _binanceConnector.CellStopLimitOrderCheck(Coins.BTC);
+                if (isCellStopLimitOrderExist)
+                {
+                    //если существует, удаляем его
+                    var deleteCellStopLimitOrderResult = _binanceConnector.DeleteCellStopLimitOrder(Coins.BTC);
+                }
+                
+                var stopLimitCellPrice = _riskManagementHandler.CalculateStopLimitCellOrder(Trend.Bear, orderAmount);
+                var stopLimitCellAmount = _tradeHandler.CalculateOrderAmount(Coins.BTC);
+                var stopLimitCellResult = _binanceConnector.CellCoins(Coins.USDT, OrderTypes.StopLimit,
+                    stopLimitCellPrice, stopLimitCellAmount);
+                
+                //формируем цену покупки
+                var buyPrice = _tradeHandler.CalculateBuyOrderPrice(Trend.Bear, priceHistory);
+                //совершаем сделку через binanceConnector
+                var result = _binanceConnector.BuyCoins(Coins.BTC, OrderTypes.Limit, buyPrice, orderAmount);
+                
+                break;
+            case Trend.Bull:
+                break;
+            case Trend.Flat:
+                break;
+        }
     }
 }
 

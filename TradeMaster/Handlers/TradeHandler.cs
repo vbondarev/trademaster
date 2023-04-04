@@ -7,7 +7,7 @@ internal class TradeHandler
 {
     private readonly BinanceConnector _binanceConnector;
 
-    public TradeHandler(BinanceConnector binanceConnector)
+    public TradeHandler(BinanceConnector binanceConnector, Traider traider)
     {
         _binanceConnector = binanceConnector;
     }
@@ -16,7 +16,7 @@ internal class TradeHandler
     /// Метод формирования истории изменений цены в заданом диапазоне
     /// </summary>
     /// <returns></returns>
-    HistoryPriceModel GeneratePriceHistory(Coins coin, Interval interval, int intervalCount)
+    public HistoryPriceModel GeneratePriceHistory(Coins coin, Interval interval, int intervalCount)
     {
         //Необходимо для интервала на основе количества интервалов рассчитать время, на которое необходимо уменьшить
         //дату последней цены
@@ -96,39 +96,68 @@ internal class TradeHandler
         return history;
     }
     
-    
-    //Разработать функционал по временным интервалам покупки
-    //Допустим будем производить следующую покупку через 30 секунд после продажи
-    //На текущий момент работаем только с биткойном
+    public decimal CalculateBuyOrderPrice(Trend trend, HistoryPriceModel historyPriceModel)
+    {
+        return trend switch
+        {
+            Trend.Bear => CalculateBearBuyOrderPrice(historyPriceModel),
+            Trend.Bull => CalculateBullBuyOrderPrice(historyPriceModel),
+            Trend.Flat => CalculateFlatBuyOrderPrice(historyPriceModel),
+            _ => 0
+        };
+    }
+
+    private decimal CalculateFlatBuyOrderPrice(HistoryPriceModel historyPriceModel)
+    {
+        return 0;
+    }
+
+    private decimal CalculateBullBuyOrderPrice(HistoryPriceModel historyPriceModel)
+    {
+        return 0;
+    }
+
+    private decimal CalculateBearBuyOrderPrice(HistoryPriceModel historyPriceModel)
+    {
+        //Определяем усредненное значение процентных процентных коэффициентов во временных интервалах
+        var averageRate = historyPriceModel.CostLimits.Average(cl => cl.Rate);
+        
+        //Определяем процентный коэффициент разницы между последней нижней стоимостью в 15-минутном интервале и ценой ордера на покупку
+        var resultEstimate = averageRate / historyPriceModel.IntervalCount;
+        
+        //Определяем поледнюю нижнюю стоимость в интервалах
+        //var lastLowerPrice = historyPriceModel.CostLimits.Max(cl => cl.LowerCostBound);
+        var lastLowerPrice = historyPriceModel.CostLimits.First(cl => cl.IntervalNumber == 1).LowerCostBound;
+        
+        //Определяем стоимость ордера на покупку
+        var buyOrderPrice = lastLowerPrice - (lastLowerPrice / 100 * (decimal)resultEstimate);
+
+        return buyOrderPrice;
+    }
 
     /// <summary>
-    /// Начало торговли
+    /// Метод рассчета суммы ордера
     /// </summary>
-    public void StartTrading()
+    /// <returns></returns>
+    public decimal CalculateOrderAmount(Coins coin)
     {
-        var trendDefiner = new TrendHandler();
-        var traider = new Traider();
-        
-        //Определяем тренд
-        var currentTrend = trendDefiner.DefineTrend();
-
-        switch (currentTrend)
-        {
-            case Trend.Bear:
-                //формируем историю изменений цены
-                //пока что возьмем за образец сведения двухчасовой давности, но в дальнейшем
-                //необходимо либо брать эту информацию из конфиг файлов, либо определять автоматически, что более приоритетно
-                var priceHistory = GeneratePriceHistory(Coins.BTC, Interval.QuarterHour, 8);
-                //формируем цену покупки
-                var buyPrice = traider.CalculateBuyOrderPrice(Trend.Bear, priceHistory);
-                //совершаем сделку через binanceConnector
-                var result = _binanceConnector.BuyCoins(Coins.BTC, OrderTypes.Limit, buyPrice);
-                
-                break;
-            case Trend.Bull:
-                break;
-            case Trend.Flat:
-                break;
-        }
+        //Предположим что пока будем закупать на все средства на спотовом аккаунте
+        //и также что покупать монеты будем за USDT
+        var amount = _binanceConnector.GetTotalAmount(coin);
+        return amount;
     }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
