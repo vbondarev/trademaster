@@ -5,6 +5,13 @@ namespace TradeMaster;
 
 public class TradeHandler
 {
+    private readonly BinanceConnector _connector;
+
+    public TradeHandler(BinanceConnector connector)
+    {
+        _connector = connector;
+    }
+
     HistoryPriceModel GeneratePriceHistory()
     {
         return new HistoryPriceModel();
@@ -22,7 +29,6 @@ public class TradeHandler
     {
         var trendDefiner = new TrendHandler();
         var traider = new Traider();
-        var binanceConnector = new BinanceConnector();
         
         //Определяем тренд
         var currentTrend = trendDefiner.DefineTrend();
@@ -35,7 +41,7 @@ public class TradeHandler
                 //формируем цену покупки
                 var buyPrice = traider.CalculateBuyOrderPrice(Trend.Bear, priceHistory);
                 //совершаем сделку через binanceConnector
-                var result = binanceConnector.BuyCoins(Coins.BTC);
+                var result = _connector.BuyCoins(Coins.BTC);
                 
                 
                 
