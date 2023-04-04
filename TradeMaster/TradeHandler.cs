@@ -48,7 +48,7 @@ public class TradeHandler
         decimal upperCostBound;
         decimal lowerCostBound;
         RateTypes rateType;
-        var rate = double.MinValue;
+        var rate = 0d;
         
         while (intervalCount != 0)
         {
@@ -120,7 +120,7 @@ public class TradeHandler
                 //формируем цену покупки
                 var buyPrice = traider.CalculateBuyOrderPrice(Trend.Bear, priceHistory);
                 //совершаем сделку через binanceConnector
-                var result = binanceConnector.BuyCoins(Coins.BTC);
+                var result = binanceConnector.BuyCoins(Coins.BTC, OrderTypes.Limit, buyPrice);
                 
                 
                 

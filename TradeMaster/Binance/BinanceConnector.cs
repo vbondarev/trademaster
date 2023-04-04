@@ -8,7 +8,7 @@ public class BinanceConnector
     /// <summary>
     /// Метод для покупки криптовалюты на Binance
     /// </summary>
-    public bool BuyCoins(Coins coin)
+    public bool BuyCoins(Coins coin, OrderTypes orderType, decimal price)
     {
         return true;
     }
@@ -16,7 +16,7 @@ public class BinanceConnector
     /// <summary>
     /// Метод для продажи криптовалюты на Binance
     /// </summary>
-    public bool CellCoins(Coins coin)
+    public bool CellCoins(Coins coin, OrderTypes orderType, decimal price)
     {
         return true;
     }
