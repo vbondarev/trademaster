@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using TradeMaster.Models;
+﻿using TradeMaster.Models;
 
 namespace TradeMaster;
 
@@ -50,3 +48,4 @@ public class Traider
         return buyOrderPrice;
     }
 }
+

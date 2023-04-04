@@ -1,20 +1,23 @@
-using System;
-using System.Collections.Generic;
 using TradeMaster.Binance;
 using TradeMaster.Models;
 
 namespace TradeMaster;
 
-public class TradeHandler
+internal class TradeHandler
 {
+    private readonly BinanceConnector _binanceConnector;
+
+    public TradeHandler(BinanceConnector binanceConnector)
+    {
+        _binanceConnector = binanceConnector;
+    }
+
     /// <summary>
     /// Метод формирования истории изменений цены в заданом диапазоне
     /// </summary>
     /// <returns></returns>
     HistoryPriceModel GeneratePriceHistory(Coins coin, Interval interval, int intervalCount)
     {
-        var binanceConnector = new BinanceConnector();
-
         //Необходимо для интервала на основе количества интервалов рассчитать время, на которое необходимо уменьшить
         //дату последней цены
         var intervalCountValue = interval switch
@@ -37,7 +40,7 @@ public class TradeHandler
         history.IntervalCount = intervalCount;
 
         //получаем время последнюй цены монеты
-        var lastCoinPrice = binanceConnector.GetLastCoinPrice(coin);
+        var lastCoinPrice = _binanceConnector.GetLastCoinPrice(coin);
         var currentDateTime = lastCoinPrice.Time;
 
         var intervalList = new List<CostLimits>();
@@ -56,8 +59,8 @@ public class TradeHandler
             endDateTime = intervalCount == 1
                 ? currentDateTime
                 : currentDateTime - (intervalCountValue * (intervalCount - 1));
-            upperCostBound = binanceConnector.GetMaxPrice(coin, startDateTime, endDateTime);
-            lowerCostBound = binanceConnector.GetMinPrice(coin, startDateTime, endDateTime);
+            upperCostBound = _binanceConnector.GetMaxPrice(coin, startDateTime, endDateTime);
+            lowerCostBound = _binanceConnector.GetMinPrice(coin, startDateTime, endDateTime);
             rateType = upperCostBound == lowerCostBound ? RateTypes.Neutral :
                 upperCostBound > lowerCostBound ? RateTypes.Negative : RateTypes.Positive;
             
@@ -105,7 +108,6 @@ public class TradeHandler
     {
         var trendDefiner = new TrendHandler();
         var traider = new Traider();
-        var binanceConnector = new BinanceConnector();
         
         //Определяем тренд
         var currentTrend = trendDefiner.DefineTrend();
@@ -120,9 +122,7 @@ public class TradeHandler
                 //формируем цену покупки
                 var buyPrice = traider.CalculateBuyOrderPrice(Trend.Bear, priceHistory);
                 //совершаем сделку через binanceConnector
-                var result = binanceConnector.BuyCoins(Coins.BTC, OrderTypes.Limit, buyPrice);
-                
-                
+                var result = _binanceConnector.BuyCoins(Coins.BTC, OrderTypes.Limit, buyPrice);
                 
                 break;
             case Trend.Bull:

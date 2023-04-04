@@ -1,10 +1,32 @@
-using System;
+using System.Text.Json;
+using Binance.Spot;
+using TradeMaster.Binance.Responses;
 using TradeMaster.Models;
 
 namespace TradeMaster.Binance;
 
-public class BinanceConnector
+internal class BinanceConnector
 {
+    private readonly IHttpClientFactory _httpFactory;
+
+    public BinanceConnector(IHttpClientFactory httpFactory)
+    {
+        _httpFactory = httpFactory;
+    }
+
+    /// <summary>
+    /// Запрашиваем статус системы
+    /// </summary>
+    /// <returns></returns>
+    public async Task<SystemStatusResponse> GetSystemStatus()
+    {
+        using var httpClient = _httpFactory.CreateClient();
+
+        var wallet = new Wallet(httpClient);
+        var response = await wallet.SystemStatus();
+        return JsonSerializer.Deserialize<SystemStatusResponse>(response)!;
+    }
+
     /// <summary>
     /// Метод для покупки криптовалюты на Binance
     /// </summary>
