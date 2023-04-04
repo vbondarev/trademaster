@@ -10,4 +10,13 @@ public class UnitTest1
         
         Assert.True(result == 5);
     }
+    
+    [Fact]
+    public void Test2()
+    {
+        var tradeHandler = new TradeHandler();
+        tradeHandler.StartTrading();
+    }
+    
+    
 }
