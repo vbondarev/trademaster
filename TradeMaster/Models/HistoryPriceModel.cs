@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace TradeMaster.Models;
 
 /// <summary>
@@ -5,8 +8,19 @@ namespace TradeMaster.Models;
 /// </summary>
 public class HistoryPriceModel
 {
+    /// <summary>
+    /// Наименование временного интервала
+    /// </summary>
     public Interval Interval { get; set; }
+    
+    /// <summary>
+    /// Количество интервалов
+    /// </summary>
     public int IntervalCount { get; set; }
+    
+    /// <summary>
+    /// Список верхних и нижних границ стоимости монеты в заданом интервале
+    /// </summary>
     public List<CostLimits> CostLimits { get; set; }
 }
 
@@ -32,9 +46,18 @@ public enum Interval
 /// </summary>
 public class CostLimits
 {
+    public int IntervalNumber { get; set; }
     public DateTime StartDateTime { get; set; }
     public DateTime EndDateTime { get; set; }
+    
+    /// <summary>
+    /// Верхняя граница стоимости
+    /// </summary>
     public decimal UpperCostBound { get; set; }
+    
+    /// <summary>
+    /// Нижняя граница стоимости
+    /// </summary>
     public decimal LowerCostBound { get; set; }
     
     // в этой модели уже должен быть тип коэффициента, который необходимо рассчитать при формировании этой модели
@@ -44,7 +67,7 @@ public class CostLimits
     public RateTypes RateType { get; set; } 
     
     //в этой модели уже должен быть процентный коэффициент, который необходимо рассчитать при формировании этой модели
-    public double Rate { get; set; } =  100 - LowerCostBound / 
+    public double Rate { get; set; }
 }
 
 public enum RateTypes

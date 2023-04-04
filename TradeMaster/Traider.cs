@@ -8,13 +8,10 @@ public class Traider
 {
     public int TestMethod( int a, int b)
     {
-        var arr = new double[] { 0.17, 0.07, 0.95, 0.35, 0.17, 0.17, 0.35 };
-        double avg = arr.Average();
-        Console.WriteLine("Average = "+avg);
         return a + b;
     }
 
-    public double CalculateBuyOrderPrice(Trend trend, HistoryPriceModel historyPriceModel)
+    public decimal CalculateBuyOrderPrice(Trend trend, HistoryPriceModel historyPriceModel)
     {
         return trend switch
         {
@@ -25,28 +22,31 @@ public class Traider
         };
     }
 
-    private double CalculateFlatBuyOrderPrice(HistoryPriceModel historyPriceModel)
+    private decimal CalculateFlatBuyOrderPrice(HistoryPriceModel historyPriceModel)
     {
         return 0;
     }
 
-    private double CalculateBullBuyOrderPrice(HistoryPriceModel historyPriceModel)
+    private decimal CalculateBullBuyOrderPrice(HistoryPriceModel historyPriceModel)
     {
         return 0;
     }
 
-    private double CalculateBearBuyOrderPrice(HistoryPriceModel historyPriceModel)
+    private decimal CalculateBearBuyOrderPrice(HistoryPriceModel historyPriceModel)
     {
         //Определяем усредненное значение процентных процентных коэффициентов во временных интервалах
         var averageRate = historyPriceModel.CostLimits.Average(cl => cl.Rate);
+        
         //Определяем процентный коэффициент разницы между последней нижней стоимостью в 15-минутном интервале и ценой ордера на покупку
         var resultEstimate = averageRate / historyPriceModel.IntervalCount;
+        
         //Определяем поледнюю нижнюю стоимость в интервалах
-        var lastLowerPrice = historyPriceModel.CostLimits.Max(cl => cl.LowerCostBound);
+        //var lastLowerPrice = historyPriceModel.CostLimits.Max(cl => cl.LowerCostBound);
+        var lastLowerPrice = historyPriceModel.CostLimits.First(cl => cl.IntervalNumber == 1).LowerCostBound;
+        
         //Определяем стоимость ордера на покупку
-        var buyOrderPrice = lastLowerPrice - (lastLowerPrice - 1%);
+        var buyOrderPrice = lastLowerPrice - (lastLowerPrice / 100 * (decimal)resultEstimate);
 
-
-        return 0;
+        return buyOrderPrice;
     }
 }
