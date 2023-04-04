@@ -1,3 +1,6 @@
+using System;
+using TradeMaster.Models;
+
 namespace TradeMaster.Binance;
 
 public class BinanceConnector
@@ -35,4 +38,20 @@ public class BinanceConnector
     {
         return 0;
     }
+
+    /// <summary>
+    /// Получить актуальную стоимость и время последней стоимости монеты
+    /// </summary>
+    /// <returns></returns>
+    public CoinPriceModel GetLastCoinPrice(Coins coin)
+    {
+        return new CoinPriceModel()
+        {
+            Coin = coin,
+            Price = 0,
+            Time = DateTime.Now
+        };
+    }
+    
+    
 }
