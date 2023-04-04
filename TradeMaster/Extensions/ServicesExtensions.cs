@@ -32,13 +32,13 @@ public static class ServicesExtensions
     
     public static IServiceCollection AddBinance(this IServiceCollection services)
     {
-        services.AddHttpClient<BinanceConnector>((sp, client) =>
+        services.AddHttpClient<IBinanceConnector, BinanceConnector>((sp, client) =>
         {
             var options = sp.GetRequiredService<IOptions<BinanceOptions>>().Value;
             var baseAddress = options.SpotUri;
             client.BaseAddress = new Uri(baseAddress);
         });
-        services.AddTransient<BinanceConnector>();
+        services.AddTransient<IBinanceConnector, BinanceConnector>();
         return services;
     }
 }

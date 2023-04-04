@@ -20,7 +20,7 @@ public class BinanceConnectorTests
             .AddBinance();
         await using var provider = services.BuildServiceProvider();
 
-        var connector = provider.GetRequiredService<BinanceConnector>();
+        var connector = provider.GetRequiredService<IBinanceConnector>();
         var response = await connector.GetSystemStatus();
         
         Assert.True(response.Status == 0);

@@ -1,15 +1,16 @@
 ﻿using TradeMaster.Binance;
+using TradeMaster.Handlers;
 using TradeMaster.Models;
 
 namespace TradeMaster;
 
-internal class Traider
+internal class Trader
 {
-    private readonly BinanceConnector _binanceConnector;
+    private readonly IBinanceConnector _binanceConnector;
     private readonly TradeHandler _tradeHandler;
     private readonly RiskManagementHandler _riskManagementHandler;
 
-    public Traider(BinanceConnector binanceConnector, TradeHandler tradeHandler, RiskManagementHandler riskManagementHandler)
+    public Trader(IBinanceConnector binanceConnector, TradeHandler tradeHandler, RiskManagementHandler riskManagementHandler)
     {
         _binanceConnector = binanceConnector;
         _tradeHandler = tradeHandler;

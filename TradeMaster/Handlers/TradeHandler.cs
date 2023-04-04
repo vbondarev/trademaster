@@ -1,13 +1,13 @@
 using TradeMaster.Binance;
 using TradeMaster.Models;
 
-namespace TradeMaster;
+namespace TradeMaster.Handlers;
 
 internal class TradeHandler
 {
-    private readonly BinanceConnector _binanceConnector;
+    private readonly IBinanceConnector _binanceConnector;
 
-    public TradeHandler(BinanceConnector binanceConnector, Traider traider)
+    public TradeHandler(IBinanceConnector binanceConnector)
     {
         _binanceConnector = binanceConnector;
     }
@@ -35,9 +35,7 @@ internal class TradeHandler
             _ => TimeSpan.Zero
         };
 
-        var history = new HistoryPriceModel();
-        history.Interval = interval;
-        history.IntervalCount = intervalCount;
+        var history = new HistoryPriceModel { Interval = interval, IntervalCount = intervalCount };
 
         //получаем время последнюй цены монеты
         var lastCoinPrice = _binanceConnector.GetLastCoinPrice(coin);
