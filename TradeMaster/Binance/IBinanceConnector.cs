@@ -1,4 +1,5 @@
-﻿using TradeMaster.Binance.Responses;
+﻿using TradeMaster.Binance.Requests;
+using TradeMaster.Binance.Responses;
 using TradeMaster.Models;
 
 namespace TradeMaster.Binance;
@@ -24,8 +25,9 @@ public interface IBinanceConnector
     /// <summary>
     /// Получить максимальную стоимость в определенном интервале
     /// </summary>
-    /// <returns></returns>
-    decimal GetMaxPrice(Coins coin, DateTime startDateTime, DateTime endDateTime);
+    /// <param name="request"><see cref="GetMaxPriceRequest"/></param>
+    /// <returns>Максимальная стоимость торговой пары</returns>
+    Task<decimal> GetMaxPrice(GetMaxPriceRequest request);
 
     /// <summary>
     /// Получить минимальную стоимость в определенном интервале
