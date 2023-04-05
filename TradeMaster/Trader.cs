@@ -37,6 +37,9 @@ internal class Trader
                 //необходимо рассчитать сумму ордера
                 var orderAmount = _tradeHandler.CalculateOrderAmount(Coins.USDT);
                 
+                //получаем сумму заработаных средств
+                var profitAmount = orderAmount - startAmount;
+                
                 //формируем историю изменений цены
                 //пока что возьмем за образец сведения двухчасовой давности, но в дальнейшем
                 //необходимо либо брать эту информацию из конфиг файлов, либо определять автоматически, что более приоритетно
@@ -63,7 +66,7 @@ internal class Trader
                     var deleteCellStopLimitOrderResult = _binanceConnector.DeleteCellStopLimitOrder(Coins.BTC);
                 }
                 
-                var stopLimitCellPrice = _riskManagementHandler.CalculateStopLimitCellOrder(Trend.Bear, orderAmount, coinCount);
+                var stopLimitCellPrice = _riskManagementHandler.CalculateStopLimitCellOrder(Trend.Bear, startAmount, coinCount, profitAmount, buyPrice);
                 var stopLimitCellAmount = _tradeHandler.CalculateOrderAmount(Coins.BTC);
                 var stopLimitCellResult = _binanceConnector.CellCoins(Coins.BTC, OrderTypes.StopLimit,
                     stopLimitCellPrice, stopLimitCellAmount);

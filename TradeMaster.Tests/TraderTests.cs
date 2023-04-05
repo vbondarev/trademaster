@@ -10,7 +10,7 @@ namespace TradeMaster.Tests;
 public class TraderTests
 {
     [Fact]
-    public void Test()
+    public async Task Test()
     {
         var mockConnector = new Mock<IBinanceConnector>();
         mockConnector
@@ -47,11 +47,15 @@ public class TraderTests
             .Returns(28100)
             .Returns(28050);
         
+        mockConnector
+            .Setup(m => m.BuyCoins(Coins.BTC, OrderTypes.Limit, It.IsAny<decimal>(), It.IsAny<decimal>()))
+            .Returns((decimal)0.03566);
+        
         var riskHandler = new RiskManagementHandler();
         var tradeHandler = new TradeHandler(mockConnector.Object);
         var trader = new Trader(mockConnector.Object, tradeHandler, riskHandler);
         
         //Необходимо зафиксировать сумму и монету, с которой начнется торговля
-        trader.StartTrading(Coins.USDT, 1000);
+        await trader.StartTrading(Coins.USDT, 1000);
     }
 }
