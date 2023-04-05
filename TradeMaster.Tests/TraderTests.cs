@@ -1,5 +1,6 @@
 ﻿using Moq;
 using TradeMaster.Binance;
+using TradeMaster.Binance.Requests;
 using TradeMaster.Handlers;
 using TradeMaster.Models;
 using Xunit;
@@ -25,15 +26,15 @@ public class TraderTests
             .Returns(new CoinPriceModel{Coin = Coins.BTC, Price = 28500, Time = DateTime.Now});
         
         mockConnector
-            .SetupSequence(m => m.GetMaxPrice(Coins.USDT,Coins.BTC, It.IsAny<DateTime>(),It.IsAny<DateTime>()))
-            .Returns(28500)
-            .Returns(28450)
-            .Returns(28470)
-            .Returns(28200)
-            .Returns(28300)
-            .Returns(28500)
-            .Returns(28200)
-            .Returns(28100);
+            .SetupSequence(m => m.GetMaxPrice(It.IsAny<GetMaxPriceRequest>()))
+            .ReturnsAsync(28500)
+            .ReturnsAsync(28450)
+            .ReturnsAsync(28470)
+            .ReturnsAsync(28200)
+            .ReturnsAsync(28300)
+            .ReturnsAsync(28500)
+            .ReturnsAsync(28200)
+            .ReturnsAsync(28100);
         
         mockConnector
             .SetupSequence(m => m.GetMinPrice(Coins.USDT,Coins.BTC, It.IsAny<DateTime>(),It.IsAny<DateTime>()))

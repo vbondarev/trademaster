@@ -60,7 +60,7 @@ internal class BinanceConnector : IBinanceConnector
 
         var market = new Market(httpClient);
 
-        var result = await market.KlineCandlestickData(request.CoinsPair, Interval.ONE_MINUTE, request.StartTime, request.EndTime);
+        var result = await market.KlineCandlestickData(request.CoinsPair, Interval.EIGTH_HOUR, request.StartTime, request.EndTime);
 
         return 0;
     }

@@ -2,20 +2,20 @@
 
 public record GetMaxPriceRequest
 {
-    private readonly Coins _firstCoin;
-    private readonly Coins _second;
+    private readonly Coins _baseCoin;
+    private readonly Coins _quotedCoin;
     private readonly DateTimeOffset _startTime;
     private readonly DateTimeOffset _endTime;
 
-    public GetMaxPriceRequest(Coins firstCoin, Coins second, DateTimeOffset startTime, DateTimeOffset endTime)
+    public GetMaxPriceRequest(Coins baseCoin, Coins quotedCoin, DateTimeOffset startTime, DateTimeOffset endTime)
     {
-        _firstCoin = firstCoin;
-        _second = second;
+        _baseCoin = baseCoin;
+        _quotedCoin = quotedCoin;
         _startTime = startTime;
         _endTime = endTime;
     }
 
-    public string CoinsPair => $"{_firstCoin}{_second}".ToUpperInvariant();
+    public string CoinsPair => $"{_baseCoin}{_quotedCoin}".ToUpperInvariant();
     
     public long StartTime => _startTime.ToUnixTimeMilliseconds();
     

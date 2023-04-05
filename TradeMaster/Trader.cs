@@ -24,7 +24,7 @@ internal class Trader
     /// <summary>
     /// Начало торговли
     /// </summary>
-    public void StartTrading(Coins baseCoin, decimal startAmount)
+    public async Task StartTrading(Coins baseCoin, decimal startAmount)
     {
         var trendDefiner = new TrendHandler();
         
@@ -40,7 +40,7 @@ internal class Trader
                 //формируем историю изменений цены
                 //пока что возьмем за образец сведения двухчасовой давности, но в дальнейшем
                 //необходимо либо брать эту информацию из конфиг файлов, либо определять автоматически, что более приоритетно
-                var priceHistory = _tradeHandler.GeneratePriceHistory(baseCoin,Coins.BTC, Interval.QuarterHour, 8);
+                var priceHistory = await _tradeHandler.GeneratePriceHistory(baseCoin,Coins.BTC, Interval.QuarterHour, 8);
 
                 //формируем цену покупки
                 var buyPrice = _tradeHandler.CalculateBuyOrderPrice(Trend.Bear, priceHistory);

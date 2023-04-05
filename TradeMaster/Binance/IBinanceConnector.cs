@@ -1,4 +1,5 @@
-﻿using TradeMaster.Binance.Responses;
+﻿using TradeMaster.Binance.Requests;
+using TradeMaster.Binance.Responses;
 using TradeMaster.Models;
 
 namespace TradeMaster.Binance;

@@ -1,4 +1,5 @@
 using TradeMaster.Binance;
+using TradeMaster.Binance.Requests;
 using TradeMaster.Models;
 
 namespace TradeMaster.Handlers;
@@ -16,7 +17,7 @@ internal class TradeHandler
     /// Метод формирования истории изменений цены в заданом диапазоне
     /// </summary>
     /// <returns></returns>
-    public HistoryPriceModel GeneratePriceHistory(Coins baseCoin, Coins quotedCoin, Interval interval, int intervalCount)
+    public async Task<HistoryPriceModel> GeneratePriceHistory(Coins baseCoin, Coins quotedCoin, Interval interval, int intervalCount)
     {
         //Необходимо для интервала на основе количества интервалов рассчитать время, на которое необходимо уменьшить
         //дату последней цены
@@ -57,7 +58,8 @@ internal class TradeHandler
             endDateTime = intervalCount == 1
                 ? currentDateTime
                 : currentDateTime - (intervalCountValue * (intervalCount - 1));
-            upperCostBound = _binanceConnector.GetMaxPrice(baseCoin, quotedCoin, startDateTime, endDateTime);
+            var request = new GetMaxPriceRequest(baseCoin, quotedCoin, startDateTime, endDateTime);
+            upperCostBound = await _binanceConnector.GetMaxPrice(request);
             lowerCostBound = _binanceConnector.GetMinPrice(baseCoin, quotedCoin, startDateTime, endDateTime);
             rateType = upperCostBound == lowerCostBound ? RateTypes.Neutral :
                 upperCostBound > lowerCostBound ? RateTypes.Negative : RateTypes.Positive;
