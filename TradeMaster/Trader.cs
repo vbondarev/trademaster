@@ -24,7 +24,7 @@ internal class Trader
     /// <summary>
     /// Начало торговли
     /// </summary>
-    public void StartTrading()
+    public void StartTrading(Coins baseCoin, decimal startAmount)
     {
         var trendDefiner = new TrendHandler();
         
@@ -40,9 +40,17 @@ internal class Trader
                 //формируем историю изменений цены
                 //пока что возьмем за образец сведения двухчасовой давности, но в дальнейшем
                 //необходимо либо брать эту информацию из конфиг файлов, либо определять автоматически, что более приоритетно
-                var priceHistory = _tradeHandler.GeneratePriceHistory(Coins.BTC, Interval.QuarterHour, 8);
+                var priceHistory = _tradeHandler.GeneratePriceHistory(baseCoin,Coins.BTC, Interval.QuarterHour, 8);
+
+                //формируем цену покупки
+                var buyPrice = _tradeHandler.CalculateBuyOrderPrice(Trend.Bear, priceHistory);
+                //совершаем сделку через binanceConnector
+                var coinCount = _binanceConnector.BuyCoins(Coins.BTC, OrderTypes.Limit, buyPrice, orderAmount);
+                
+                
                 
                 //необходимо рассчитать и создать стоп-лимит ордер на продажу
+                //стоп-лимит должен рассчитываться после покупки монеты
                 //стоп-лимит должен пересчитываться после каждого лимитного ордера на покупку
                 //на основе общего баланса и каждый предыдущий существующий должен отменяться
                 
@@ -55,15 +63,10 @@ internal class Trader
                     var deleteCellStopLimitOrderResult = _binanceConnector.DeleteCellStopLimitOrder(Coins.BTC);
                 }
                 
-                var stopLimitCellPrice = _riskManagementHandler.CalculateStopLimitCellOrder(Trend.Bear, orderAmount);
+                var stopLimitCellPrice = _riskManagementHandler.CalculateStopLimitCellOrder(Trend.Bear, orderAmount, coinCount);
                 var stopLimitCellAmount = _tradeHandler.CalculateOrderAmount(Coins.BTC);
-                var stopLimitCellResult = _binanceConnector.CellCoins(Coins.USDT, OrderTypes.StopLimit,
+                var stopLimitCellResult = _binanceConnector.CellCoins(Coins.BTC, OrderTypes.StopLimit,
                     stopLimitCellPrice, stopLimitCellAmount);
-                
-                //формируем цену покупки
-                var buyPrice = _tradeHandler.CalculateBuyOrderPrice(Trend.Bear, priceHistory);
-                //совершаем сделку через binanceConnector
-                var result = _binanceConnector.BuyCoins(Coins.BTC, OrderTypes.Limit, buyPrice, orderAmount);
                 
                 break;
             case Trend.Bull:

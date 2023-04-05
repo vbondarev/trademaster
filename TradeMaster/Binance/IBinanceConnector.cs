@@ -14,7 +14,7 @@ public interface IBinanceConnector
     /// <summary>
     /// Метод для покупки криптовалюты на Binance
     /// </summary>
-    bool BuyCoins(Coins coin, OrderTypes orderType, decimal price, decimal amount);
+    decimal BuyCoins(Coins coin, OrderTypes orderType, decimal price, decimal amount);
 
     /// <summary>
     /// Метод для продажи криптовалюты на Binance
@@ -25,19 +25,19 @@ public interface IBinanceConnector
     /// Получить максимальную стоимость в определенном интервале
     /// </summary>
     /// <returns></returns>
-    decimal GetMaxPrice(Coins coin, DateTime startDateTime, DateTime endDateTime);
+    decimal GetMaxPrice(Coins baseCoin, Coins quotedCoin, DateTime startDateTime, DateTime endDateTime);
 
     /// <summary>
     /// Получить минимальную стоимость в определенном интервале
     /// </summary>
     /// <returns></returns>
-    decimal GetMinPrice(Coins coin, DateTime startDateTime, DateTime endDateTime);
+    decimal GetMinPrice(Coins baseCoin, Coins quotedCoin, DateTime startDateTime, DateTime endDateTime);
 
     /// <summary>
     /// Получить актуальную стоимость и время последней стоимости монеты
     /// </summary>
     /// <returns></returns>
-    CoinPriceModel GetLastCoinPrice(Coins coin);
+    CoinPriceModel GetLastCoinPrice(Coins baseCoin, Coins quotedCoin);
 
     /// <summary>
     /// Получить общую сумму монет на спотовом аккаунте
