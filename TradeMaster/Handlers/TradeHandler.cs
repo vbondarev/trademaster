@@ -16,7 +16,7 @@ internal class TradeHandler
     /// Метод формирования истории изменений цены в заданом диапазоне
     /// </summary>
     /// <returns></returns>
-    public HistoryPriceModel GeneratePriceHistory(Coins coin, Interval interval, int intervalCount)
+    public HistoryPriceModel GeneratePriceHistory(Coins baseCoin, Coins quotedCoin, Interval interval, int intervalCount)
     {
         //Необходимо для интервала на основе количества интервалов рассчитать время, на которое необходимо уменьшить
         //дату последней цены
@@ -38,7 +38,7 @@ internal class TradeHandler
         var history = new HistoryPriceModel { Interval = interval, IntervalCount = intervalCount };
 
         //получаем время последнюй цены монеты
-        var lastCoinPrice = _binanceConnector.GetLastCoinPrice(coin);
+        var lastCoinPrice = _binanceConnector.GetLastCoinPrice(baseCoin, quotedCoin);
         var currentDateTime = lastCoinPrice.Time;
 
         var intervalList = new List<CostLimits>();
@@ -57,8 +57,8 @@ internal class TradeHandler
             endDateTime = intervalCount == 1
                 ? currentDateTime
                 : currentDateTime - (intervalCountValue * (intervalCount - 1));
-            upperCostBound = _binanceConnector.GetMaxPrice(coin, startDateTime, endDateTime);
-            lowerCostBound = _binanceConnector.GetMinPrice(coin, startDateTime, endDateTime);
+            upperCostBound = _binanceConnector.GetMaxPrice(baseCoin, quotedCoin, startDateTime, endDateTime);
+            lowerCostBound = _binanceConnector.GetMinPrice(baseCoin, quotedCoin, startDateTime, endDateTime);
             rateType = upperCostBound == lowerCostBound ? RateTypes.Neutral :
                 upperCostBound > lowerCostBound ? RateTypes.Negative : RateTypes.Positive;
             

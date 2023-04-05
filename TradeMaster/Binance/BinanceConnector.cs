@@ -32,9 +32,14 @@ internal class BinanceConnector : IBinanceConnector
     /// <summary>
     /// Метод для покупки криптовалюты на Binance
     /// </summary>
-    public bool BuyCoins(Coins coin, OrderTypes orderType, decimal price, decimal amount)
+    /// <param name="coin"></param>
+    /// <param name="orderType"></param>
+    /// <param name="price"></param>
+    /// <param name="amount"></param>
+    /// <returns>Возвращает количество купленных монет</returns>
+    public decimal BuyCoins(Coins coin, OrderTypes orderType, decimal price, decimal amount)
     {
-        return true;
+        return 0;
     }
 
     /// <summary>
@@ -64,7 +69,7 @@ internal class BinanceConnector : IBinanceConnector
     /// Получить минимальную стоимость в определенном интервале
     /// </summary>
     /// <returns></returns>
-    public decimal GetMinPrice(Coins coin, DateTime startDateTime, DateTime endDateTime)
+    public decimal GetMinPrice(Coins baseCoin, Coins quotedCoin, DateTime startDateTime, DateTime endDateTime)
     {
         return 0;
     }
@@ -73,11 +78,11 @@ internal class BinanceConnector : IBinanceConnector
     /// Получить актуальную стоимость и время последней стоимости монеты
     /// </summary>
     /// <returns></returns>
-    public CoinPriceModel GetLastCoinPrice(Coins coin)
+    public CoinPriceModel GetLastCoinPrice(Coins baseCoin, Coins quotedCoin)
     {
         return new CoinPriceModel()
         {
-            Coin = coin,
+            Coin = quotedCoin,
             Price = 0,
             Time = DateTime.Now
         };
