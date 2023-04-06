@@ -39,13 +39,14 @@ public class BinanceProvider : IBinanceProvider
 
     public async Task<decimal> GetMaxPrice(Coins baseCoin, Coins quotedCoin, Interval interval, DateTimeOffset startTime, DateTimeOffset endTime)
     {
-        var request = new GetMaxPriceRequest(baseCoin, quotedCoin, interval, startTime, endTime);
+        var request = new CandlestickDataRequest(baseCoin, quotedCoin, interval, startTime, endTime);
         var candlesticks = await _connector.GetCandlestickData(request);
         var highestPrices = new List<decimal>(candlesticks.Length); 
+        const int HighestPriceIndex = 2;
         
         foreach (var candlestick in candlesticks)
         {
-            if (!decimal.TryParse(candlestick[2], NumberStyles.Any, CultureInfo.InvariantCulture, out var highPrice))
+            if (!decimal.TryParse(candlestick[HighestPriceIndex], NumberStyles.Any, CultureInfo.InvariantCulture, out var highPrice))
             {
                 throw new BinanceHighPriceException("Не удалось получить максимальную цену свечи");
             }
@@ -56,9 +57,24 @@ public class BinanceProvider : IBinanceProvider
         return highestPrices.Max();
     }
 
-    public decimal GetMinPrice(Coins baseCoin, Coins quotedCoin, DateTime startDateTime, DateTime endDateTime)
+    public async Task<decimal> GetMinPrice(Coins baseCoin, Coins quotedCoin, Interval interval, DateTimeOffset startTime, DateTimeOffset endTime)
     {
-        throw new NotImplementedException();
+        var request = new CandlestickDataRequest(baseCoin, quotedCoin, interval, startTime, endTime);
+        var candlesticks = await _connector.GetCandlestickData(request);
+        var lowestPrices = new List<decimal>(candlesticks.Length); 
+        const int LowestPriceIndex = 3;
+        
+        foreach (var candlestick in candlesticks)
+        {
+            if (!decimal.TryParse(candlestick[LowestPriceIndex], NumberStyles.Any, CultureInfo.InvariantCulture, out var highPrice))
+            {
+                throw new BinanceHighPriceException("Не удалось получить минимальную цену свечи");
+            }
+
+            lowestPrices.Add(highPrice);
+        }
+
+        return lowestPrices.Min();
     }
 
     public CoinPriceModel GetLastCoinPrice(Coins baseCoin, Coins quotedCoin)

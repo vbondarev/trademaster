@@ -35,6 +35,7 @@ public enum Interval
     Hour,
     TwoHour,
     FourHour,
+    EightHour,
     Day,
     Week,
     Month,
@@ -46,8 +47,8 @@ public enum Interval
 public class CostLimits
 {
     public int IntervalNumber { get; set; }
-    public DateTime StartDateTime { get; set; }
-    public DateTime EndDateTime { get; set; }
+    public DateTimeOffset StartDateTime { get; set; }
+    public DateTimeOffset EndDateTime { get; set; }
     
     /// <summary>
     /// Верхняя граница стоимости

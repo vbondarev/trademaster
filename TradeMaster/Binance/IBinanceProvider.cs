@@ -22,7 +22,7 @@ public interface IBinanceProvider
     bool CellCoins(Coins coin, OrderTypes orderType, decimal price, decimal amount);
 
     /// <summary>
-    /// Получить максимальную стоимость в определенном интервале
+    /// Получить максимальную стоимость за определенный интервал
     /// </summary>
     /// <param name="baseCoin"></param>
     /// <param name="quotedCoin"></param>
@@ -33,10 +33,15 @@ public interface IBinanceProvider
     Task<decimal> GetMaxPrice(Coins baseCoin, Coins quotedCoin, Interval interval, DateTimeOffset startTime, DateTimeOffset endTime);
 
     /// <summary>
-    /// Получить минимальную стоимость в определенном интервале
+    /// Получить минимальную стоимость за определенный интервал
     /// </summary>
-    /// <returns></returns>
-    decimal GetMinPrice(Coins baseCoin, Coins quotedCoin, DateTime startDateTime, DateTime endDateTime);
+    /// <param name="baseCoin"></param>
+    /// <param name="quotedCoin"></param>
+    /// <param name="interval"></param>
+    /// <param name="startTime"></param>
+    /// <param name="endTime"></param>
+    /// <returns>Минимальная стоимость торговый пары</returns>
+    Task<decimal> GetMinPrice(Coins baseCoin, Coins quotedCoin, Interval interval, DateTimeOffset startTime, DateTimeOffset endTime);
 
     /// <summary>
     /// Получить актуальную стоимость и время последней стоимости монеты

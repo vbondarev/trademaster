@@ -53,7 +53,7 @@ internal class BinanceConnector : IBinanceConnector
     /// Получить максимальную стоимость в определенном интервале
     /// </summary>
     /// <returns></returns>
-    public async Task<string[][]> GetCandlestickData(GetMaxPriceRequest request)
+    public async Task<string[][]> GetCandlestickData(CandlestickDataRequest request)
     {
         using var httpClient = _httpFactory.CreateClient();
 
@@ -75,15 +75,6 @@ internal class BinanceConnector : IBinanceConnector
         return data.ToArray();
     }
     
-    /// <summary>
-    /// Получить минимальную стоимость в определенном интервале
-    /// </summary>
-    /// <returns></returns>
-    public decimal GetMinPrice(Coins baseCoin, Coins quotedCoin, DateTime startDateTime, DateTime endDateTime)
-    {
-        return 0;
-    }
-
     /// <summary>
     /// Получить актуальную стоимость и время последней стоимости монеты
     /// </summary>

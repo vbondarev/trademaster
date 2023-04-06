@@ -1,5 +1,4 @@
 using TradeMaster.Binance;
-using TradeMaster.Binance.Requests;
 using TradeMaster.Models;
 
 namespace TradeMaster.Handlers;
@@ -44,8 +43,8 @@ internal class TradeHandler
         var intervalList = new List<CostLimits>();
 
         //формирование списка параметров стоимости монеты в заданых интервалах
-        DateTime startDateTime;
-        DateTime endDateTime;
+        DateTimeOffset startDateTime;
+        DateTimeOffset endDateTime;
         decimal upperCostBound;
         decimal lowerCostBound;
         RateTypes rateType;
@@ -57,9 +56,8 @@ internal class TradeHandler
             endDateTime = intervalCount == 1
                 ? currentDateTime
                 : currentDateTime - (intervalCountValue * (intervalCount - 1));
-            var request = new GetMaxPriceRequest(baseCoin, quotedCoin, interval, startDateTime, endDateTime);
             upperCostBound = await _binanceProvider.GetMaxPrice(baseCoin, quotedCoin, interval, startDateTime, endDateTime);
-            lowerCostBound = _binanceProvider.GetMinPrice(baseCoin, quotedCoin, startDateTime, endDateTime);
+            lowerCostBound = await _binanceProvider.GetMinPrice(baseCoin, quotedCoin, interval, startDateTime, endDateTime);
             rateType = upperCostBound == lowerCostBound ? RateTypes.Neutral :
                 upperCostBound > lowerCostBound ? RateTypes.Negative : RateTypes.Positive;
             
@@ -145,18 +143,4 @@ internal class TradeHandler
         var amount = _binanceProvider.GetTotalAmount(coin);
         return amount;
     }
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 }

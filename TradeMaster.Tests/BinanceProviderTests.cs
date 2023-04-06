@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using TradeMaster.Binance;
+using TradeMaster.Binance.Responses;
 using TradeMaster.Extensions;
 using TradeMaster.Models;
 using Xunit;
@@ -9,8 +10,8 @@ namespace TradeMaster.Tests;
 public class BinanceProviderTests : IDisposable
 {
     //private const string SecretKey = "fqJebg89z5utgKIdbsXJRXoiYXshdFhSVzAFsqHs8tsNG0hkq6GXBmGqhVbMC9WG";
-    
-    private readonly ServiceProvider _provider;
+    private readonly IBinanceProvider _provider;
+    private readonly ServiceProvider _sp;
 
     public BinanceProviderTests()
     {
@@ -20,32 +21,42 @@ public class BinanceProviderTests : IDisposable
             .AddCustomLogging()
             .AddBinance();
         
-        _provider = services.BuildServiceProvider();
+        _sp = services.BuildServiceProvider();
+        _provider = _sp.GetRequiredService<IBinanceProvider>();
     }
 
     [Fact]
     public async Task Request_Should_Return_Status_Normal()
     {
-        var connector = _provider.GetRequiredService<IBinanceConnector>();
-        var response = await connector.GetSystemStatus();
+        var status = await _provider.GetSystemStatus();
         
-        Assert.True(response.Status == 0);
+        Assert.Equal(BinanceStatus.Normal, status);
     }
     
     [Fact]
     public async Task Request_Should_Return_Maximum_Price_In_The_Interval()
     {
-        var connector = _provider.GetRequiredService<IBinanceProvider>();
+        var startTime = DateTimeOffset.Now.AddHours(-8);
+        var endTime = DateTimeOffset.Now;
+        
+        var maxPrice = await _provider.GetMaxPrice(Coins.BTC, Coins.USDT, Interval.Minute, startTime, endTime);
+        
+        Assert.True(maxPrice > 0);
+    }
+    
+    [Fact]
+    public async Task Request_Should_Return_Maximum_Min_In_The_Interval()
+    {
         var startTime = DateTimeOffset.Now.AddHours(-8);
         var endTime = DateTimeOffset.Now;
      
-        var maxPrice = await connector.GetMaxPrice(Coins.BTC, Coins.USDT, Interval.Minute, startTime, endTime);
+        var minPrice = await _provider.GetMinPrice(Coins.BTC, Coins.USDT, Interval.EightHour, startTime, endTime);
         
-        Assert.True(maxPrice > 0);
+        Assert.True(minPrice > 0);
     }
 
     public void Dispose()
     {
-        _provider.Dispose();
+        _sp.Dispose();
     }
 }

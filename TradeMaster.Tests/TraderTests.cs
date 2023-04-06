@@ -41,15 +41,15 @@ public class TraderTests
             .ReturnsAsync(28100);
         
         mockConnector
-            .SetupSequence(m => m.GetMinPrice(Coins.USDT,Coins.BTC, It.IsAny<DateTime>(),It.IsAny<DateTime>()))
-            .Returns(28450)
-            .Returns(28470)
-            .Returns(28200)
-            .Returns(28300)
-            .Returns(28250)
-            .Returns(28200)
-            .Returns(28100)
-            .Returns(28050);
+            .SetupSequence(m => m.GetMinPrice(Coins.USDT,Coins.BTC, Interval.Minute, It.IsAny<DateTimeOffset>(),It.IsAny<DateTimeOffset>()))
+            .ReturnsAsync(28450)
+            .ReturnsAsync(28470)
+            .ReturnsAsync(28200)
+            .ReturnsAsync(28300)
+            .ReturnsAsync(28250)
+            .ReturnsAsync(28200)
+            .ReturnsAsync(28100)
+            .ReturnsAsync(28050);
         
         mockConnector
             .Setup(m => m.BuyCoins(Coins.BTC, OrderTypes.Limit, It.IsAny<decimal>(), It.IsAny<decimal>()))
