@@ -1,16 +1,15 @@
-﻿using TradeMaster.Binance.Requests;
-using TradeMaster.Binance.Responses;
+﻿using TradeMaster.Binance.Responses;
 using TradeMaster.Models;
 
 namespace TradeMaster.Binance;
 
-public interface IBinanceConnector
+public interface IBinanceProvider
 {
     /// <summary>
     /// Запрашиваем статус системы
     /// </summary>
     /// <returns></returns>
-    Task<SystemStatusResponse> GetSystemStatus();
+    Task<BinanceStatus> GetSystemStatus();
 
     /// <summary>
     /// Метод для покупки криптовалюты на Binance
@@ -25,9 +24,13 @@ public interface IBinanceConnector
     /// <summary>
     /// Получить максимальную стоимость в определенном интервале
     /// </summary>
-    /// <param name="request"><see cref="GetMaxPriceRequest"/></param>
+    /// <param name="baseCoin"></param>
+    /// <param name="quotedCoin"></param>
+    /// <param name="interval"></param>
+    /// <param name="startTime"></param>
+    /// <param name="endTime"></param>
     /// <returns>Максимальная стоимость торговой пары</returns>
-    Task<string[][]> GetCandlestickData(GetMaxPriceRequest request);
+    Task<decimal> GetMaxPrice(Coins baseCoin, Coins quotedCoin, Interval interval, DateTimeOffset startTime, DateTimeOffset endTime);
 
     /// <summary>
     /// Получить минимальную стоимость в определенном интервале

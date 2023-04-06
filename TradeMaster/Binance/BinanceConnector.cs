@@ -3,7 +3,6 @@ using Binance.Spot;
 using TradeMaster.Binance.Requests;
 using TradeMaster.Binance.Responses;
 using TradeMaster.Models;
-using Interval = Binance.Spot.Models.Interval;
 
 namespace TradeMaster.Binance;
 
@@ -54,15 +53,26 @@ internal class BinanceConnector : IBinanceConnector
     /// Получить максимальную стоимость в определенном интервале
     /// </summary>
     /// <returns></returns>
-    public async Task<decimal> GetMaxPrice(GetMaxPriceRequest request)
+    public async Task<string[][]> GetCandlestickData(GetMaxPriceRequest request)
     {
         using var httpClient = _httpFactory.CreateClient();
 
         var market = new Market(httpClient);
+        var response = await market.KlineCandlestickData(request.CoinsPair, request.Interval, request.StartTime, request.EndTime);
+        var candlesticks = JsonSerializer.Deserialize<object[][]>(response)!;
 
-        var result = await market.KlineCandlestickData(request.CoinsPair, Interval.EIGTH_HOUR, request.StartTime, request.EndTime);
+        var data = new List<string[]>();
+        foreach (var candlestick in candlesticks)
+        {
+            var elements = candlestick
+                .Cast<JsonElement>()
+                .Select(jsonElement => jsonElement.ToString())
+                .ToArray();
 
-        return 0;
+            data.Add(elements);
+        }
+
+        return data.ToArray();
     }
     
     /// <summary>

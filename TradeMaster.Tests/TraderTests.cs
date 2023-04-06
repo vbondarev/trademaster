@@ -1,6 +1,5 @@
 ﻿using Moq;
 using TradeMaster.Binance;
-using TradeMaster.Binance.Requests;
 using TradeMaster.Handlers;
 using TradeMaster.Models;
 using Xunit;
@@ -10,9 +9,9 @@ namespace TradeMaster.Tests;
 public class TraderTests
 {
     [Fact]
-    public async Task Test()
+    public async Task Test_Debug()
     {
-        var mockConnector = new Mock<IBinanceConnector>();
+        var mockConnector = new Mock<IBinanceProvider>();
         mockConnector
             .Setup(m => m.GetTotalAmount(Coins.USDT))
             .Returns(1000);
@@ -26,7 +25,12 @@ public class TraderTests
             .Returns(new CoinPriceModel{Coin = Coins.BTC, Price = 28500, Time = DateTime.Now});
         
         mockConnector
-            .SetupSequence(m => m.GetMaxPrice(It.IsAny<GetMaxPriceRequest>()))
+            .SetupSequence(m => m.GetMaxPrice(
+                It.IsAny<Coins>(), 
+                It.IsAny<Coins>(), 
+                It.IsAny<Interval>(), 
+                It.IsAny<DateTimeOffset>(), 
+                It.IsAny<DateTimeOffset>()))
             .ReturnsAsync(28500)
             .ReturnsAsync(28450)
             .ReturnsAsync(28470)

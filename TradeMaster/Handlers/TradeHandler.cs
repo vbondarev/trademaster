@@ -6,11 +6,11 @@ namespace TradeMaster.Handlers;
 
 internal class TradeHandler
 {
-    private readonly IBinanceConnector _binanceConnector;
+    private readonly IBinanceProvider _binanceProvider;
 
-    public TradeHandler(IBinanceConnector binanceConnector)
+    public TradeHandler(IBinanceProvider binanceProvider)
     {
-        _binanceConnector = binanceConnector;
+        _binanceProvider = binanceProvider;
     }
 
     /// <summary>
@@ -32,14 +32,13 @@ internal class TradeHandler
             Interval.Day => TimeSpan.FromDays(1),
             Interval.Week => TimeSpan.FromDays(7),
             Interval.Month => TimeSpan.FromDays(30),
-            Interval.Year => TimeSpan.FromDays(365),
             _ => TimeSpan.Zero
         };
 
         var history = new HistoryPriceModel { Interval = interval, IntervalCount = intervalCount };
 
         //получаем время последнюй цены монеты
-        var lastCoinPrice = _binanceConnector.GetLastCoinPrice(baseCoin, quotedCoin);
+        var lastCoinPrice = _binanceProvider.GetLastCoinPrice(baseCoin, quotedCoin);
         var currentDateTime = lastCoinPrice.Time;
 
         var intervalList = new List<CostLimits>();
@@ -58,9 +57,9 @@ internal class TradeHandler
             endDateTime = intervalCount == 1
                 ? currentDateTime
                 : currentDateTime - (intervalCountValue * (intervalCount - 1));
-            var request = new GetMaxPriceRequest(baseCoin, quotedCoin, startDateTime, endDateTime);
-            upperCostBound = await _binanceConnector.GetMaxPrice(request);
-            lowerCostBound = _binanceConnector.GetMinPrice(baseCoin, quotedCoin, startDateTime, endDateTime);
+            var request = new GetMaxPriceRequest(baseCoin, quotedCoin, interval, startDateTime, endDateTime);
+            upperCostBound = await _binanceProvider.GetMaxPrice(baseCoin, quotedCoin, interval, startDateTime, endDateTime);
+            lowerCostBound = _binanceProvider.GetMinPrice(baseCoin, quotedCoin, startDateTime, endDateTime);
             rateType = upperCostBound == lowerCostBound ? RateTypes.Neutral :
                 upperCostBound > lowerCostBound ? RateTypes.Negative : RateTypes.Positive;
             
@@ -143,7 +142,7 @@ internal class TradeHandler
     {
         //Предположим что пока будем закупать на все средства на спотовом аккаунте
         //и также что покупать монеты будем за USDT
-        var amount = _binanceConnector.GetTotalAmount(coin);
+        var amount = _binanceProvider.GetTotalAmount(coin);
         return amount;
     }
 
