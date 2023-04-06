@@ -1,19 +1,18 @@
 using Microsoft.Extensions.DependencyInjection;
 using TradeMaster.Binance;
-using TradeMaster.Binance.Requests;
 using TradeMaster.Extensions;
 using TradeMaster.Models;
 using Xunit;
 
 namespace TradeMaster.Tests;
 
-public class BinanceConnectorTests : IDisposable
+public class BinanceProviderTests : IDisposable
 {
     //private const string SecretKey = "fqJebg89z5utgKIdbsXJRXoiYXshdFhSVzAFsqHs8tsNG0hkq6GXBmGqhVbMC9WG";
     
     private readonly ServiceProvider _provider;
 
-    public BinanceConnectorTests()
+    public BinanceProviderTests()
     {
         var services = new ServiceCollection();
         services
@@ -34,15 +33,15 @@ public class BinanceConnectorTests : IDisposable
     }
     
     [Fact]
-    public async Task Request_Should_Return_CandlestickData()
+    public async Task Request_Should_Return_Maximum_Price_In_The_Interval()
     {
-        var connector = _provider.GetRequiredService<IBinanceConnector>();
+        var connector = _provider.GetRequiredService<IBinanceProvider>();
         var startTime = DateTimeOffset.Now.AddHours(-8);
         var endTime = DateTimeOffset.Now;
-        var request = new GetMaxPriceRequest(Coins.BTC, Coins.USDT, Interval.Minute, startTime, endTime);
      
-        var response = await connector.GetCandlestickData(request);
-        Assert.NotEmpty(response);
+        var maxPrice = await connector.GetMaxPrice(Coins.BTC, Coins.USDT, Interval.Minute, startTime, endTime);
+        
+        Assert.True(maxPrice > 0);
     }
 
     public void Dispose()

@@ -29,16 +29,15 @@ public class HistoryPriceModel
 /// </summary>
 public enum Interval
 {
-    Year,
-    Month,
-    Week,
-    Day,
-    FourHour,
-    TwoHour,
-    Hour,
-    HalfHour,
+    Minute,
     QuarterHour,
-    Minute
+    HalfHour,
+    Hour,
+    TwoHour,
+    FourHour,
+    Day,
+    Week,
+    Month,
 }
 
 /// <summary>

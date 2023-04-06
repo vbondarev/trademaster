@@ -6,13 +6,13 @@ namespace TradeMaster;
 
 internal class Trader
 {
-    private readonly IBinanceConnector _binanceConnector;
+    private readonly IBinanceProvider _binanceProvider;
     private readonly TradeHandler _tradeHandler;
     private readonly RiskManagementHandler _riskManagementHandler;
 
-    public Trader(IBinanceConnector binanceConnector, TradeHandler tradeHandler, RiskManagementHandler riskManagementHandler)
+    public Trader(IBinanceProvider binanceProvider, TradeHandler tradeHandler, RiskManagementHandler riskManagementHandler)
     {
-        _binanceConnector = binanceConnector;
+        _binanceProvider = binanceProvider;
         _tradeHandler = tradeHandler;
         _riskManagementHandler = riskManagementHandler;
     }
@@ -45,7 +45,7 @@ internal class Trader
                 //формируем цену покупки
                 var buyPrice = _tradeHandler.CalculateBuyOrderPrice(Trend.Bear, priceHistory);
                 //совершаем сделку через binanceConnector
-                var coinCount = _binanceConnector.BuyCoins(Coins.BTC, OrderTypes.Limit, buyPrice, orderAmount);
+                var coinCount = _binanceProvider.BuyCoins(Coins.BTC, OrderTypes.Limit, buyPrice, orderAmount);
                 
                 
                 
@@ -56,16 +56,16 @@ internal class Trader
                 
                 //если существует стоп-лимитный ордер на продажу, отменяем его
                 //проверяем существование стоп-лимитного ордера на продажу
-                var isCellStopLimitOrderExist = _binanceConnector.CellStopLimitOrderCheck(Coins.BTC);
+                var isCellStopLimitOrderExist = _binanceProvider.CellStopLimitOrderCheck(Coins.BTC);
                 if (isCellStopLimitOrderExist)
                 {
                     //если существует, удаляем его
-                    var deleteCellStopLimitOrderResult = _binanceConnector.DeleteCellStopLimitOrder(Coins.BTC);
+                    var deleteCellStopLimitOrderResult = _binanceProvider.DeleteCellStopLimitOrder(Coins.BTC);
                 }
                 
                 var stopLimitCellPrice = _riskManagementHandler.CalculateStopLimitCellOrder(Trend.Bear, orderAmount, coinCount);
                 var stopLimitCellAmount = _tradeHandler.CalculateOrderAmount(Coins.BTC);
-                var stopLimitCellResult = _binanceConnector.CellCoins(Coins.BTC, OrderTypes.StopLimit,
+                var stopLimitCellResult = _binanceProvider.CellCoins(Coins.BTC, OrderTypes.StopLimit,
                     stopLimitCellPrice, stopLimitCellAmount);
                 
                 break;

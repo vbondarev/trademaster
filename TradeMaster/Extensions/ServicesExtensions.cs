@@ -14,7 +14,7 @@ public static class ServicesExtensions
     {
         var configurationBuilder = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", true, true);
-        services.AddSingleton<IConfiguration>(sp => configurationBuilder.Build());
+        services.AddSingleton<IConfiguration>(_ => configurationBuilder.Build());
         services.ConfigureOptions<BinanceOptionsSetup>();
         
         return services;
@@ -38,7 +38,9 @@ public static class ServicesExtensions
             var baseAddress = options.SpotUri;
             client.BaseAddress = new Uri(baseAddress);
         });
+        
         services.AddTransient<IBinanceConnector, BinanceConnector>();
+        services.AddTransient<IBinanceProvider, BinanceProvider>();
         return services;
     }
 }
