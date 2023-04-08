@@ -1,4 +1,5 @@
 ﻿using TradeMaster.Binance;
+using TradeMaster.Enums;
 using TradeMaster.Handlers;
 using TradeMaster.Models;
 
@@ -24,7 +25,7 @@ internal class Trader
     /// <summary>
     /// Начало торговли
     /// </summary>
-    public async Task StartTrading(Coins baseCoin, decimal startAmount)
+    public async Task StartTrading(Coin baseCoin, decimal startAmount)
     {
         var trendDefiner = new TrendHandler();
         
@@ -35,7 +36,7 @@ internal class Trader
         {
             case Trend.Bear:
                 //необходимо рассчитать сумму ордера
-                var orderAmount = _tradeHandler.CalculateOrderAmount(Coins.USDT);
+                var orderAmount = _tradeHandler.CalculateOrderAmount(Coin.USDT);
                 
                 //получаем сумму заработаных средств
                 var profitAmount = orderAmount - startAmount;
@@ -43,14 +44,12 @@ internal class Trader
                 //формируем историю изменений цены
                 //пока что возьмем за образец сведения двухчасовой давности, но в дальнейшем
                 //необходимо либо брать эту информацию из конфиг файлов, либо определять автоматически, что более приоритетно
-                var priceHistory = await _tradeHandler.GeneratePriceHistory(baseCoin,Coins.BTC, Interval.QuarterHour, 8);
+                var priceHistory = await _tradeHandler.GeneratePriceHistory(baseCoin,Coin.BTC, Interval.QuarterHour, 8);
 
                 //формируем цену покупки
                 var buyPrice = _tradeHandler.CalculateBuyOrderPrice(Trend.Bear, priceHistory);
                 //совершаем сделку через binanceConnector
-                var coinCount = _binanceProvider.BuyCoins(Coins.BTC, OrderTypes.Limit, buyPrice, orderAmount);
-                
-                
+                var coinCount = _binanceProvider.BuyCoins(Coin.BTC, OrderTypes.Limit, buyPrice, orderAmount);
                 
                 //необходимо рассчитать и создать стоп-лимит ордер на продажу
                 //стоп-лимит должен рассчитываться после покупки монеты
@@ -59,16 +58,16 @@ internal class Trader
                 
                 //если существует стоп-лимитный ордер на продажу, отменяем его
                 //проверяем существование стоп-лимитного ордера на продажу
-                var isCellStopLimitOrderExist = _binanceProvider.CellStopLimitOrderCheck(Coins.BTC);
+                var isCellStopLimitOrderExist = _binanceProvider.CellStopLimitOrderCheck(Coin.BTC);
                 if (isCellStopLimitOrderExist)
                 {
                     //если существует, удаляем его
-                    var deleteCellStopLimitOrderResult = _binanceProvider.DeleteCellStopLimitOrder(Coins.BTC);
+                    var deleteCellStopLimitOrderResult = _binanceProvider.DeleteCellStopLimitOrder(Coin.BTC);
                 }
                 
                 var stopLimitCellPrice = _riskManagementHandler.CalculateStopLimitCellOrder(Trend.Bear, startAmount, coinCount, profitAmount, buyPrice);
-                var stopLimitCellAmount = _tradeHandler.CalculateOrderAmount(Coins.BTC);
-                var stopLimitCellResult = _binanceProvider.CellCoins(Coins.BTC, OrderTypes.StopLimit,
+                var stopLimitCellAmount = _tradeHandler.CalculateOrderAmount(Coin.BTC);
+                var stopLimitCellResult = _binanceProvider.CellCoins(Coin.BTC, OrderTypes.StopLimit,
                     stopLimitCellPrice, stopLimitCellAmount);
                 
                 break;

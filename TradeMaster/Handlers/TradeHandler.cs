@@ -1,4 +1,5 @@
 using TradeMaster.Binance;
+using TradeMaster.Enums;
 using TradeMaster.Models;
 
 namespace TradeMaster.Handlers;
@@ -16,7 +17,7 @@ internal class TradeHandler
     /// Метод формирования истории изменений цены в заданом диапазоне
     /// </summary>
     /// <returns></returns>
-    public async Task<HistoryPriceModel> GeneratePriceHistory(Coins baseCoin, Coins quotedCoin, Interval interval, int intervalCount)
+    public async Task<HistoryPriceModel> GeneratePriceHistory(Coin baseCoin, Coin quotedCoin, Interval interval, int intervalCount)
     {
         //Необходимо для интервала на основе количества интервалов рассчитать время, на которое необходимо уменьшить
         //дату последней цены
@@ -37,7 +38,7 @@ internal class TradeHandler
         var history = new HistoryPriceModel { Interval = interval, IntervalCount = intervalCount };
 
         //получаем время последнюй цены монеты
-        var lastCoinPrice = _binanceProvider.GetLastCoinPrice(baseCoin, quotedCoin);
+        var lastCoinPrice = await _binanceProvider.GetLastPrice(baseCoin, quotedCoin);
         var currentDateTime = lastCoinPrice.Time;
 
         var intervalList = new List<CostLimits>();
@@ -136,7 +137,7 @@ internal class TradeHandler
     /// Метод рассчета суммы ордера
     /// </summary>
     /// <returns></returns>
-    public decimal CalculateOrderAmount(Coins coin)
+    public decimal CalculateOrderAmount(Coin coin)
     {
         //Предположим что пока будем закупать на все средства на спотовом аккаунте
         //и также что покупать монеты будем за USDT

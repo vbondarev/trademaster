@@ -2,7 +2,8 @@ using System.Text.Json;
 using Binance.Spot;
 using TradeMaster.Binance.Requests;
 using TradeMaster.Binance.Responses;
-using TradeMaster.Models;
+using TradeMaster.Enums;
+using TradeMaster.Exceptions;
 
 namespace TradeMaster.Binance;
 
@@ -16,7 +17,7 @@ internal class BinanceConnector : IBinanceConnector
     }
 
     /// <summary>
-    /// Запрашиваем статус системы
+    /// GET /sapi/v1/system/status
     /// </summary>
     /// <returns></returns>
     public async Task<SystemStatusResponse> GetSystemStatus()
@@ -25,7 +26,9 @@ internal class BinanceConnector : IBinanceConnector
 
         var wallet = new Wallet(httpClient);
         var response = await wallet.SystemStatus();
-        return JsonSerializer.Deserialize<SystemStatusResponse>(response)!;
+        var status = JsonSerializer.Deserialize<SystemStatusResponse>(response);
+
+        return status ?? throw new BinanceConnectorException("Не удалось получить состояние системы");
     }
 
     /// <summary>
@@ -36,7 +39,7 @@ internal class BinanceConnector : IBinanceConnector
     /// <param name="price"></param>
     /// <param name="amount"></param>
     /// <returns>Возвращает количество купленных монет</returns>
-    public decimal BuyCoins(Coins coin, OrderTypes orderType, decimal price, decimal amount)
+    public decimal BuyCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount)
     {
         return 0;
     }
@@ -44,13 +47,13 @@ internal class BinanceConnector : IBinanceConnector
     /// <summary>
     /// Метод для продажи криптовалюты на Binance
     /// </summary>
-    public bool CellCoins(Coins coin, OrderTypes orderType, decimal price, decimal amount)
+    public bool CellCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount)
     {
         return true;
     }
     
     /// <summary>
-    /// Получить максимальную стоимость в определенном интервале
+    /// GET /api/v3/klines
     /// </summary>
     /// <returns></returns>
     public async Task<string[][]> GetCandlestickData(CandlestickDataRequest request)
@@ -59,7 +62,11 @@ internal class BinanceConnector : IBinanceConnector
 
         var market = new Market(httpClient);
         var response = await market.KlineCandlestickData(request.CoinsPair, request.Interval, request.StartTime, request.EndTime);
-        var candlesticks = JsonSerializer.Deserialize<object[][]>(response)!;
+        var candlesticks = JsonSerializer.Deserialize<object[][]>(response);
+
+        if (candlesticks == null)
+            throw new BinanceConnectorException(
+                $"Не удалось получить свечи по торговой паре {request.CoinsPair} за интервал {request.StartTime}-{request.EndTime}");
 
         var data = new List<string[]>();
         foreach (var candlestick in candlesticks)
@@ -76,24 +83,26 @@ internal class BinanceConnector : IBinanceConnector
     }
     
     /// <summary>
-    /// Получить актуальную стоимость и время последней стоимости монеты
+    /// GET /api/v3/ticker/price
     /// </summary>
     /// <returns></returns>
-    public CoinPriceModel GetLastCoinPrice(Coins baseCoin, Coins quotedCoin)
+    public async Task<SymbolPriceTickerResponse> GetLastPrice(LastPriceRequest request)
     {
-        return new CoinPriceModel()
-        {
-            Coin = quotedCoin,
-            Price = 0,
-            Time = DateTime.Now
-        };
+        using var httpClient = _httpFactory.CreateClient();
+     
+        var market = new Market(httpClient);
+        var response = await market.SymbolPriceTicker(request.CoinsPair);
+        var price = JsonSerializer.Deserialize<SymbolPriceTickerResponse>(response);
+
+        return price ?? throw new BinanceConnectorException(
+            $"Не удалось получить актуальную стоимость торговой пары {request.CoinsPair}");
     }
     
     /// <summary>
     /// Получить общую сумму монет на спотовом аккаунте
     /// </summary>
     /// <returns></returns>
-    public decimal GetTotalAmount(Coins coin)
+    public decimal GetTotalAmount(Coin coin)
     {
         return 0;
     }
@@ -103,7 +112,7 @@ internal class BinanceConnector : IBinanceConnector
     /// </summary>
     /// <param name="coin"></param>
     /// <returns></returns>
-    public bool CellStopLimitOrderCheck(Coins coin)
+    public bool CellStopLimitOrderCheck(Coin coin)
     {
         return true;
     }
@@ -113,7 +122,7 @@ internal class BinanceConnector : IBinanceConnector
     /// </summary>
     /// <param name="btc"></param>
     /// <returns></returns>
-    public bool DeleteCellStopLimitOrder(Coins btc)
+    public bool DeleteCellStopLimitOrder(Coin btc)
     {
         return true;
     }

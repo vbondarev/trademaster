@@ -2,6 +2,7 @@
 using TradeMaster.Binance.Exceptions;
 using TradeMaster.Binance.Requests;
 using TradeMaster.Binance.Responses;
+using TradeMaster.Enums;
 using TradeMaster.Models;
 
 namespace TradeMaster.Binance;
@@ -27,17 +28,17 @@ public class BinanceProvider : IBinanceProvider
         };
     }
 
-    public decimal BuyCoins(Coins coin, OrderTypes orderType, decimal price, decimal amount)
+    public decimal BuyCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount)
     {
         throw new NotImplementedException();
     }
 
-    public bool CellCoins(Coins coin, OrderTypes orderType, decimal price, decimal amount)
+    public bool CellCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<decimal> GetMaxPrice(Coins baseCoin, Coins quotedCoin, Interval interval, DateTimeOffset startTime, DateTimeOffset endTime)
+    public async Task<decimal> GetMaxPrice(Coin baseCoin, Coin quotedCoin, Interval interval, DateTimeOffset startTime, DateTimeOffset endTime)
     {
         var request = new CandlestickDataRequest(baseCoin, quotedCoin, interval, startTime, endTime);
         var candlesticks = await _connector.GetCandlestickData(request);
@@ -57,7 +58,7 @@ public class BinanceProvider : IBinanceProvider
         return highestPrices.Max();
     }
 
-    public async Task<decimal> GetMinPrice(Coins baseCoin, Coins quotedCoin, Interval interval, DateTimeOffset startTime, DateTimeOffset endTime)
+    public async Task<decimal> GetMinPrice(Coin baseCoin, Coin quotedCoin, Interval interval, DateTimeOffset startTime, DateTimeOffset endTime)
     {
         var request = new CandlestickDataRequest(baseCoin, quotedCoin, interval, startTime, endTime);
         var candlesticks = await _connector.GetCandlestickData(request);
@@ -77,22 +78,30 @@ public class BinanceProvider : IBinanceProvider
         return lowestPrices.Min();
     }
 
-    public CoinPriceModel GetLastCoinPrice(Coins baseCoin, Coins quotedCoin)
+    public async Task<CoinPriceModel> GetLastPrice(Coin baseCoin, Coin quotedCoin)
+    {
+        var request = new LastPriceRequest(baseCoin, quotedCoin);
+        var response = await _connector.GetLastPrice(request);
+
+        if (decimal.TryParse(response.Price, NumberStyles.Any, CultureInfo.InvariantCulture, out var price))
+        {
+            return new CoinPriceModel(baseCoin, quotedCoin) { Price = price, Time = DateTimeOffset.Now };    
+        }
+
+        throw new InvalidCastException($"Не удалось преобразовать строку {response.Price} в число");
+    }
+
+    public decimal GetTotalAmount(Coin coin)
     {
         throw new NotImplementedException();
     }
 
-    public decimal GetTotalAmount(Coins coin)
+    public bool CellStopLimitOrderCheck(Coin coin)
     {
         throw new NotImplementedException();
     }
 
-    public bool CellStopLimitOrderCheck(Coins coin)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool DeleteCellStopLimitOrder(Coins btc)
+    public bool DeleteCellStopLimitOrder(Coin btc)
     {
         throw new NotImplementedException();
     }

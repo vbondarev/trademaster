@@ -1,5 +1,6 @@
 ﻿using Moq;
 using TradeMaster.Binance;
+using TradeMaster.Enums;
 using TradeMaster.Handlers;
 using TradeMaster.Models;
 using Xunit;
@@ -13,21 +14,21 @@ public class TraderTests
     {
         var mockConnector = new Mock<IBinanceProvider>();
         mockConnector
-            .Setup(m => m.GetTotalAmount(Coins.USDT))
+            .Setup(m => m.GetTotalAmount(Coin.USDT))
             .Returns(1000);
         
         mockConnector
-            .Setup(m => m.GetTotalAmount(Coins.BTC))
+            .Setup(m => m.GetTotalAmount(Coin.BTC))
             .Returns(1000);
         
         mockConnector
-            .Setup(m => m.GetLastCoinPrice(Coins.USDT,Coins.BTC))
-            .Returns(new CoinPriceModel{Coin = Coins.BTC, Price = 28500, Time = DateTime.Now});
+            .Setup(m => m.GetLastPrice(Coin.USDT,Coin.BTC))
+            .ReturnsAsync(new CoinPriceModel(Coin.BTC, Coin.USDT) {Price = 28500, Time = DateTime.Now});
         
         mockConnector
             .SetupSequence(m => m.GetMaxPrice(
-                It.IsAny<Coins>(), 
-                It.IsAny<Coins>(), 
+                It.IsAny<Coin>(), 
+                It.IsAny<Coin>(), 
                 It.IsAny<Interval>(), 
                 It.IsAny<DateTimeOffset>(), 
                 It.IsAny<DateTimeOffset>()))
@@ -41,7 +42,7 @@ public class TraderTests
             .ReturnsAsync(28100);
         
         mockConnector
-            .SetupSequence(m => m.GetMinPrice(Coins.USDT,Coins.BTC, Interval.Minute, It.IsAny<DateTimeOffset>(),It.IsAny<DateTimeOffset>()))
+            .SetupSequence(m => m.GetMinPrice(Coin.USDT,Coin.BTC, Interval.Minute, It.IsAny<DateTimeOffset>(),It.IsAny<DateTimeOffset>()))
             .ReturnsAsync(28450)
             .ReturnsAsync(28470)
             .ReturnsAsync(28200)
@@ -52,7 +53,7 @@ public class TraderTests
             .ReturnsAsync(28050);
         
         mockConnector
-            .Setup(m => m.BuyCoins(Coins.BTC, OrderTypes.Limit, It.IsAny<decimal>(), It.IsAny<decimal>()))
+            .Setup(m => m.BuyCoins(Coin.BTC, OrderTypes.Limit, It.IsAny<decimal>(), It.IsAny<decimal>()))
             .Returns((decimal)0.03566);
         
         var riskHandler = new RiskManagementHandler();
@@ -60,6 +61,6 @@ public class TraderTests
         var trader = new Trader(mockConnector.Object, tradeHandler, riskHandler);
         
         //Необходимо зафиксировать сумму и монету, с которой начнется торговля
-        await trader.StartTrading(Coins.USDT, 1000);
+        await trader.StartTrading(Coin.USDT, 1000);
     }
 }

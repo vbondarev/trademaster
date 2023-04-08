@@ -1,17 +1,18 @@
-﻿using TradeMaster.Models;
+﻿using TradeMaster.Enums;
+using TradeMaster.Models;
 using BinanceInterval = Binance.Spot.Models.Interval;
 
 namespace TradeMaster.Binance.Requests;
 
 public record CandlestickDataRequest
 {
-    private readonly Coins _baseCoin;
-    private readonly Coins _quotedCoin;
+    private readonly Coin _baseCoin;
+    private readonly Coin _quotedCoin;
     private readonly Interval _interval;
     private readonly DateTimeOffset _startTime;
     private readonly DateTimeOffset _endTime;
 
-    public CandlestickDataRequest(Coins baseCoin, Coins quotedCoin, Interval interval, DateTimeOffset startTime, DateTimeOffset endTime)
+    public CandlestickDataRequest(Coin baseCoin, Coin quotedCoin, Interval interval, DateTimeOffset startTime, DateTimeOffset endTime)
     {
         _baseCoin = baseCoin;
         _quotedCoin = quotedCoin;

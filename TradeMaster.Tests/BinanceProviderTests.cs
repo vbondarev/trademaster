@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using TradeMaster.Binance;
 using TradeMaster.Binance.Responses;
+using TradeMaster.Enums;
 using TradeMaster.Extensions;
 using TradeMaster.Models;
 using Xunit;
@@ -39,7 +40,7 @@ public class BinanceProviderTests : IDisposable
         var startTime = DateTimeOffset.Now.AddHours(-8);
         var endTime = DateTimeOffset.Now;
         
-        var maxPrice = await _provider.GetMaxPrice(Coins.BTC, Coins.USDT, Interval.Minute, startTime, endTime);
+        var maxPrice = await _provider.GetMaxPrice(Coin.BTC, Coin.USDT, Interval.Minute, startTime, endTime);
         
         Assert.True(maxPrice > 0);
     }
@@ -50,9 +51,17 @@ public class BinanceProviderTests : IDisposable
         var startTime = DateTimeOffset.Now.AddHours(-8);
         var endTime = DateTimeOffset.Now;
      
-        var minPrice = await _provider.GetMinPrice(Coins.BTC, Coins.USDT, Interval.EightHour, startTime, endTime);
+        var minPrice = await _provider.GetMinPrice(Coin.BTC, Coin.USDT, Interval.EightHour, startTime, endTime);
         
         Assert.True(minPrice > 0);
+    }
+    
+    [Fact]
+    public async Task Request_Should_Return_Last_Price()
+    {
+        var price = await _provider.GetLastPrice(Coin.BTC, Coin.USDT);
+        
+        Assert.True(price.Price > 0);
     }
 
     public void Dispose()

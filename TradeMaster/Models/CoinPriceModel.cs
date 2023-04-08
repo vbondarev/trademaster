@@ -1,8 +1,17 @@
+using TradeMaster.Enums;
+
 namespace TradeMaster.Models;
 
-public class CoinPriceModel
+public record CoinPriceModel
 {
-    public Coins Coin { get; set; }
-    public DateTime Time { get; set; }
+    public CoinPriceModel(Coin baseCoin, Coin quotedCoin)
+    {
+        CoinsPair = $"{baseCoin}{quotedCoin}".ToUpperInvariant();
+    }
+
+    public string CoinsPair { get; private set; } = null!;
+    
+    public DateTimeOffset Time { get; set; }
+    
     public decimal Price { get; set; }
 }

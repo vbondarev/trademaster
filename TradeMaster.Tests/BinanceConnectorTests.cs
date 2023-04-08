@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using TradeMaster.Binance;
 using TradeMaster.Binance.Requests;
+using TradeMaster.Enums;
 using TradeMaster.Extensions;
 using TradeMaster.Models;
 using Xunit;
@@ -39,7 +40,7 @@ public class BinanceConnectorTests : IDisposable
         var connector = _provider.GetRequiredService<IBinanceConnector>();
         var startTime = DateTimeOffset.Now.AddHours(-8);
         var endTime = DateTimeOffset.Now;
-        var request = new CandlestickDataRequest(Coins.BTC, Coins.USDT, Interval.Minute, startTime, endTime);
+        var request = new CandlestickDataRequest(Coin.BTC, Coin.USDT, Interval.Minute, startTime, endTime);
      
         var response = await connector.GetCandlestickData(request);
         Assert.NotEmpty(response);

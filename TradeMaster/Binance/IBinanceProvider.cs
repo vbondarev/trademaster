@@ -1,4 +1,5 @@
 ﻿using TradeMaster.Binance.Responses;
+using TradeMaster.Enums;
 using TradeMaster.Models;
 
 namespace TradeMaster.Binance;
@@ -14,12 +15,12 @@ public interface IBinanceProvider
     /// <summary>
     /// Метод для покупки криптовалюты на Binance
     /// </summary>
-    decimal BuyCoins(Coins coin, OrderTypes orderType, decimal price, decimal amount);
+    decimal BuyCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount);
 
     /// <summary>
     /// Метод для продажи криптовалюты на Binance
     /// </summary>
-    bool CellCoins(Coins coin, OrderTypes orderType, decimal price, decimal amount);
+    bool CellCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount);
 
     /// <summary>
     /// Получить максимальную стоимость за определенный интервал
@@ -30,7 +31,7 @@ public interface IBinanceProvider
     /// <param name="startTime"></param>
     /// <param name="endTime"></param>
     /// <returns>Максимальная стоимость торговой пары</returns>
-    Task<decimal> GetMaxPrice(Coins baseCoin, Coins quotedCoin, Interval interval, DateTimeOffset startTime, DateTimeOffset endTime);
+    Task<decimal> GetMaxPrice(Coin baseCoin, Coin quotedCoin, Interval interval, DateTimeOffset startTime, DateTimeOffset endTime);
 
     /// <summary>
     /// Получить минимальную стоимость за определенный интервал
@@ -41,31 +42,31 @@ public interface IBinanceProvider
     /// <param name="startTime"></param>
     /// <param name="endTime"></param>
     /// <returns>Минимальная стоимость торговый пары</returns>
-    Task<decimal> GetMinPrice(Coins baseCoin, Coins quotedCoin, Interval interval, DateTimeOffset startTime, DateTimeOffset endTime);
+    Task<decimal> GetMinPrice(Coin baseCoin, Coin quotedCoin, Interval interval, DateTimeOffset startTime, DateTimeOffset endTime);
 
     /// <summary>
     /// Получить актуальную стоимость и время последней стоимости монеты
     /// </summary>
     /// <returns></returns>
-    CoinPriceModel GetLastCoinPrice(Coins baseCoin, Coins quotedCoin);
+    Task<CoinPriceModel> GetLastPrice(Coin baseCoin, Coin quotedCoin);
 
     /// <summary>
     /// Получить общую сумму монет на спотовом аккаунте
     /// </summary>
     /// <returns></returns>
-    decimal GetTotalAmount(Coins coin);
+    decimal GetTotalAmount(Coin coin);
 
     /// <summary>
     /// Проверка существования стоп-лимитного ордера на продажу
     /// </summary>
     /// <param name="coin"></param>
     /// <returns></returns>
-    bool CellStopLimitOrderCheck(Coins coin);
+    bool CellStopLimitOrderCheck(Coin coin);
 
     /// <summary>
     /// Удаление существующего стоп-лимитного ордера на продажу
     /// </summary>
     /// <param name="btc"></param>
     /// <returns></returns>
-    bool DeleteCellStopLimitOrder(Coins btc);
+    bool DeleteCellStopLimitOrder(Coin btc);
 }

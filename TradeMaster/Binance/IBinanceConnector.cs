@@ -1,6 +1,6 @@
 ﻿using TradeMaster.Binance.Requests;
 using TradeMaster.Binance.Responses;
-using TradeMaster.Models;
+using TradeMaster.Enums;
 
 namespace TradeMaster.Binance;
 
@@ -15,12 +15,12 @@ public interface IBinanceConnector
     /// <summary>
     /// Метод для покупки криптовалюты на Binance
     /// </summary>
-    decimal BuyCoins(Coins coin, OrderTypes orderType, decimal price, decimal amount);
+    decimal BuyCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount);
 
     /// <summary>
     /// Метод для продажи криптовалюты на Binance
     /// </summary>
-    bool CellCoins(Coins coin, OrderTypes orderType, decimal price, decimal amount);
+    bool CellCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount);
 
     /// <summary>
     /// Получить свечи за определенный интервал времени 
@@ -55,25 +55,25 @@ public interface IBinanceConnector
     /// Получить актуальную стоимость и время последней стоимости монеты
     /// </summary>
     /// <returns></returns>
-    CoinPriceModel GetLastCoinPrice(Coins baseCoin, Coins quotedCoin);
+    Task<SymbolPriceTickerResponse> GetLastPrice(LastPriceRequest request);
 
     /// <summary>
     /// Получить общую сумму монет на спотовом аккаунте
     /// </summary>
     /// <returns></returns>
-    decimal GetTotalAmount(Coins coin);
+    decimal GetTotalAmount(Coin coin);
 
     /// <summary>
     /// Проверка существования стоп-лимитного ордера на продажу
     /// </summary>
     /// <param name="coin"></param>
     /// <returns></returns>
-    bool CellStopLimitOrderCheck(Coins coin);
+    bool CellStopLimitOrderCheck(Coin coin);
 
     /// <summary>
     /// Удаление существующего стоп-лимитного ордера на продажу
     /// </summary>
     /// <param name="btc"></param>
     /// <returns></returns>
-    bool DeleteCellStopLimitOrder(Coins btc);
+    bool DeleteCellStopLimitOrder(Coin btc);
 }
