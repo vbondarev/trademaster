@@ -28,15 +28,39 @@ public class BinanceProvider : IBinanceProvider
         };
     }
 
-    public decimal BuyCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount)
+    /// <summary>
+    /// Метод покупки монеты. В данном методе необходимо реализовать механизм, который вернет успех.
+    /// В случае, если в течение 10 минут ордер на покупку не будет исполнен, необходимо вернуть false в свойстве Success.
+    /// Важно мониторить результат выполнения ордера, и как только он будет исполнен, вернуть true в свойстве Success.
+    /// Если через 10 минут ордер не исполнен, Антон перезапустит механизм покупки.
+    /// </summary>
+    /// <param name="coin"></param>
+    /// <param name="orderType"></param>
+    /// <param name="price"></param>
+    /// <param name="amount"></param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public OrderResultModel BuyCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount)
     {
         throw new NotImplementedException();
     }
 
-    public bool CellCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount)
+    public OrderResultModel CellCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount)
     {
         throw new NotImplementedException();
     }
+
+    /// <summary>
+    /// Удаление существующего лимитного ордера на покупку котируемой монеты
+    /// </summary>
+    /// <param name="quotedCoin"></param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public bool DeleteBuyLimitOrder(Coin quotedCoin)
+    {
+        throw new NotImplementedException();
+    }
+    
 
     public async Task<decimal> GetMaxPrice(Coin baseCoin, Coin quotedCoin, Interval interval, DateTimeOffset startTime, DateTimeOffset endTime)
     {

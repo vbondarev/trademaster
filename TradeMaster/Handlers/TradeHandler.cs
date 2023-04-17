@@ -144,4 +144,51 @@ internal class TradeHandler
         var amount = _binanceProvider.GetTotalAmount(coin);
         return amount;
     }
+
+    public decimal CalculateCellOrderPrice(Coin baseCoin, Coin quotedCoin, Trend trend, HistoryPriceModel historyPriceModel, decimal buyPrice)
+    {
+        return trend switch
+        {
+            Trend.Bear => CalculateBearCellOrderPrice(baseCoin, quotedCoin, historyPriceModel, buyPrice),
+            Trend.Bull => CalculateBullCellOrderPrice(baseCoin, quotedCoin, historyPriceModel, buyPrice),
+            Trend.Flat => CalculateFlatCellOrderPrice(baseCoin, quotedCoin, historyPriceModel, buyPrice),
+            _ => 0
+        };
+    }
+    
+    private decimal CalculateFlatCellOrderPrice(Coin baseCoin, Coin quotedCoin, HistoryPriceModel historyPriceModel, decimal buyPrice)
+    {
+        return 0;
+    }
+
+    private decimal CalculateBullCellOrderPrice(Coin baseCoin, Coin quotedCoin, HistoryPriceModel historyPriceModel, decimal buyPrice)
+    {
+        return 0;
+    }
+
+    private decimal CalculateBearCellOrderPrice(Coin baseCoin, Coin quotedCoin, HistoryPriceModel historyPriceModel, decimal buyPrice)
+    {
+        decimal buyOrderPrice;
+        //Определяем усредненное значение процентных процентных коэффициентов во временных интервалах
+        var averageRate = historyPriceModel.CostLimits.Average(cl => cl.Rate);
+        //Определяем процентный коэффициент разницы между последней нижней стоимостью в 15-минутном интервале и ценой ордера на покупку
+        var resultEstimate = averageRate / historyPriceModel.IntervalCount;
+        
+        //Текущая стоимость котируемой монеты
+        var lastCoinPrice = _binanceProvider.GetLastPrice(baseCoin, quotedCoin).Result.Price;
+
+        //Если цена по которой купили котируемую монету ниже, чем текущая стоимость монеты, то рассчет цены продажи будем вести от текущей стоимости
+        if (buyPrice < lastCoinPrice)
+        {
+            //Определяем стоимость ордера на покупку
+            buyOrderPrice = lastCoinPrice + (lastCoinPrice / 100 * (decimal)resultEstimate);
+        }
+        else
+        {
+            buyOrderPrice = buyPrice + (buyPrice / 100 * (decimal)resultEstimate);
+        }
+
+        return buyOrderPrice;
+    }
+
 }

@@ -15,12 +15,12 @@ public interface IBinanceProvider
     /// <summary>
     /// Метод для покупки криптовалюты на Binance
     /// </summary>
-    decimal BuyCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount);
+    OrderResultModel BuyCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount);
 
     /// <summary>
     /// Метод для продажи криптовалюты на Binance
     /// </summary>
-    bool CellCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount);
+    OrderResultModel CellCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount);
 
     /// <summary>
     /// Получить максимальную стоимость за определенный интервал
@@ -69,4 +69,11 @@ public interface IBinanceProvider
     /// <param name="btc"></param>
     /// <returns></returns>
     bool DeleteCellStopLimitOrder(Coin btc);
+
+    /// <summary>
+    /// Удаление существующего лимитного ордера на покупку котируемой монеты
+    /// </summary>
+    /// <param name="quotedCoin"></param>
+    /// <returns></returns>
+    bool DeleteBuyLimitOrder(Coin quotedCoin);
 }

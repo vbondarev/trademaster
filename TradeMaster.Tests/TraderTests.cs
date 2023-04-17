@@ -17,13 +17,16 @@ public class TraderTests
             .Setup(m => m.GetTotalAmount(Coin.USDT))
             .Returns(1000);
         
-        mockConnector
-            .Setup(m => m.GetTotalAmount(Coin.BTC))
-            .Returns(1000);
+        // mockConnector
+        //     .Setup(m => m.GetLastPrice(Coin.USDT,Coin.BTC))
+        //     .ReturnsAsync(new CoinPriceModel(Coin.BTC, Coin.USDT) {Price = 28500, Time = DateTime.Now});
         
         mockConnector
-            .Setup(m => m.GetLastPrice(Coin.USDT,Coin.BTC))
-            .ReturnsAsync(new CoinPriceModel(Coin.BTC, Coin.USDT) {Price = 28500, Time = DateTime.Now});
+            .SetupSequence(m => m.GetLastPrice(
+                It.IsAny<Coin>(), 
+                It.IsAny<Coin>()))
+            .ReturnsAsync(new CoinPriceModel(Coin.BTC, Coin.USDT) {Price = 28500, Time = DateTime.Now})
+            .ReturnsAsync(new CoinPriceModel(Coin.BTC, Coin.USDT) {Price = 28000, Time = DateTime.Now});
         
         mockConnector
             .SetupSequence(m => m.GetMaxPrice(
@@ -42,7 +45,7 @@ public class TraderTests
             .ReturnsAsync(28100);
         
         mockConnector
-            .SetupSequence(m => m.GetMinPrice(Coin.USDT,Coin.BTC, Interval.Minute, It.IsAny<DateTimeOffset>(),It.IsAny<DateTimeOffset>()))
+            .SetupSequence(m => m.GetMinPrice(Coin.USDT,Coin.BTC, Interval.QuarterHour, It.IsAny<DateTimeOffset>(),It.IsAny<DateTimeOffset>()))
             .ReturnsAsync(28450)
             .ReturnsAsync(28470)
             .ReturnsAsync(28200)
@@ -61,6 +64,6 @@ public class TraderTests
         var trader = new Trader(mockConnector.Object, tradeHandler, riskHandler);
         
         //Необходимо зафиксировать сумму и монету, с которой начнется торговля
-        await trader.StartTrading(Coin.USDT, 1000);
+        var result = await trader.StartTrading(Coin.USDT, Coin.BTC, 1000, 10);
     }
 }
