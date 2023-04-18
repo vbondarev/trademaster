@@ -15,7 +15,7 @@ public class TraderTests
         var mockConnector = new Mock<IBinanceProvider>();
         mockConnector
             .Setup(m => m.GetTotalAmount(Coin.USDT))
-            .Returns(1000);
+            .ReturnsAsync(1000);
         
         // mockConnector
         //     .Setup(m => m.GetLastPrice(Coin.USDT,Coin.BTC))

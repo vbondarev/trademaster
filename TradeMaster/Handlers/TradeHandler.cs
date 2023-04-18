@@ -137,12 +137,11 @@ internal class TradeHandler
     /// Метод рассчета суммы ордера
     /// </summary>
     /// <returns></returns>
-    public decimal CalculateOrderAmount(Coin coin)
+    public async Task<decimal> CalculateOrderAmount(Coin coin)
     {
         //Предположим что пока будем закупать на все средства на спотовом аккаунте
         //и также что покупать монеты будем за USDT
-        var amount = _binanceProvider.GetTotalAmount(coin);
-        return amount;
+        return await _binanceProvider.GetTotalAmount(coin);
     }
 
     public decimal CalculateCellOrderPrice(Coin baseCoin, Coin quotedCoin, Trend trend, HistoryPriceModel historyPriceModel, decimal buyPrice)

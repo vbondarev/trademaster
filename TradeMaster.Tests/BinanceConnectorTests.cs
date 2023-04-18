@@ -10,8 +10,6 @@ namespace TradeMaster.Tests;
 
 public class BinanceConnectorTests : IDisposable
 {
-    //private const string SecretKey = "fqJebg89z5utgKIdbsXJRXoiYXshdFhSVzAFsqHs8tsNG0hkq6GXBmGqhVbMC9WG";
-    
     private readonly ServiceProvider _provider;
 
     public BinanceConnectorTests()

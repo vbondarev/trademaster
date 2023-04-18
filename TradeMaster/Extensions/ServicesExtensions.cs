@@ -35,7 +35,7 @@ public static class ServicesExtensions
         services.AddHttpClient<IBinanceConnector, BinanceConnector>((sp, client) =>
         {
             var options = sp.GetRequiredService<IOptions<BinanceOptions>>().Value;
-            var baseAddress = options.SpotUri;
+            var baseAddress = options.BaseUri;
             client.BaseAddress = new Uri(baseAddress);
         });
         

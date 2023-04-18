@@ -1,4 +1,4 @@
-﻿namespace TradeMaster;
+﻿namespace TradeMaster.Enums;
 
 public enum OrderTypes
 {

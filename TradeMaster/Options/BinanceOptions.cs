@@ -1,8 +1,12 @@
-﻿namespace TradeMaster.Options;
+﻿using JetBrains.Annotations;
+
+namespace TradeMaster.Options;
 
 public record BinanceOptions
 {
-    public string SpotUri { get; set; } = null!;
+    public string BaseUri { get; [UsedImplicitly]init; } = null!;
     
-    public string ApiKey { get; set; } = null!;
+    public string ApiKey { get; [UsedImplicitly]init; } = null!;
+    
+    public string SecretKey { get; [UsedImplicitly]init; } = null!;
 }

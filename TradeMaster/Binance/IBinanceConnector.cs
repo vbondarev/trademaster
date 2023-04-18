@@ -55,13 +55,13 @@ public interface IBinanceConnector
     /// Получить актуальную стоимость и время последней стоимости монеты
     /// </summary>
     /// <returns></returns>
-    Task<SymbolPriceTickerResponse> GetLastPrice(LastPriceRequest request);
+    Task<SymbolPriceTickerResponse> GetSymbolPriceTicker(LastPriceRequest request);
 
     /// <summary>
     /// Получить общую сумму монет на спотовом аккаунте
     /// </summary>
     /// <returns></returns>
-    decimal GetTotalAmount(Coin coin);
+    Task<AccountInformationResponse> GetAccountInformation();
 
     /// <summary>
     /// Проверка существования стоп-лимитного ордера на продажу

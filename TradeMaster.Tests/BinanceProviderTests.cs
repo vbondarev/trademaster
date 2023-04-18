@@ -10,7 +10,6 @@ namespace TradeMaster.Tests;
 
 public class BinanceProviderTests : IDisposable
 {
-    //private const string SecretKey = "fqJebg89z5utgKIdbsXJRXoiYXshdFhSVzAFsqHs8tsNG0hkq6GXBmGqhVbMC9WG";
     private readonly IBinanceProvider _provider;
     private readonly ServiceProvider _sp;
 
@@ -62,6 +61,14 @@ public class BinanceProviderTests : IDisposable
         var price = await _provider.GetLastPrice(Coin.BTC, Coin.USDT);
         
         Assert.True(price.Price > 0);
+    }
+    
+    [Fact]
+    public async Task Request_Should_Return_Total_Amount()
+    {
+        var amount = await _provider.GetTotalAmount(Coin.USDT);
+        
+        Assert.True(amount > 0);
     }
 
     public void Dispose()

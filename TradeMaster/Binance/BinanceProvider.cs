@@ -105,19 +105,27 @@ public class BinanceProvider : IBinanceProvider
     public async Task<CoinPriceModel> GetLastPrice(Coin baseCoin, Coin quotedCoin)
     {
         var request = new LastPriceRequest(baseCoin, quotedCoin);
-        var response = await _connector.GetLastPrice(request);
+        var response = await _connector.GetSymbolPriceTicker(request);
 
         if (decimal.TryParse(response.Price, NumberStyles.Any, CultureInfo.InvariantCulture, out var price))
         {
             return new CoinPriceModel(baseCoin, quotedCoin) { Price = price, Time = DateTimeOffset.Now };    
         }
 
-        throw new InvalidCastException($"Не удалось преобразовать строку {response.Price} в число");
+        throw new InvalidCastException($"Не удалось преобразовать актуальную цену {response.Price} в число");
     }
 
-    public decimal GetTotalAmount(Coin coin)
+    public async Task<decimal> GetTotalAmount(Coin coin)
     {
-        throw new NotImplementedException();
+        var response = await _connector.GetAccountInformation();
+        var balance = response.Balances.Single(balance => balance.Asset == coin.ToString());
+        
+        if (decimal.TryParse(balance.Free, NumberStyles.Any, CultureInfo.InvariantCulture, out var amount))
+        {
+            return amount;    
+        }
+
+        throw new InvalidCastException($"Не удалось преобразовать баланс кошелька {balance.Free} в число");
     }
 
     public bool CellStopLimitOrderCheck(Coin coin)

@@ -1,19 +1,24 @@
 using System.Text.Json;
+using Binance.Common;
 using Binance.Spot;
+using Microsoft.Extensions.Options;
 using TradeMaster.Binance.Requests;
 using TradeMaster.Binance.Responses;
 using TradeMaster.Enums;
 using TradeMaster.Exceptions;
+using TradeMaster.Options;
 
 namespace TradeMaster.Binance;
 
 internal class BinanceConnector : IBinanceConnector
 {
     private readonly IHttpClientFactory _httpFactory;
+    private readonly BinanceOptions _options;
 
-    public BinanceConnector(IHttpClientFactory httpFactory)
+    public BinanceConnector(IHttpClientFactory httpFactory, IOptions<BinanceOptions> options)
     {
         _httpFactory = httpFactory;
+        _options = options.Value;
     }
 
     /// <summary>
@@ -86,7 +91,7 @@ internal class BinanceConnector : IBinanceConnector
     /// GET /api/v3/ticker/price
     /// </summary>
     /// <returns></returns>
-    public async Task<SymbolPriceTickerResponse> GetLastPrice(LastPriceRequest request)
+    public async Task<SymbolPriceTickerResponse> GetSymbolPriceTicker(LastPriceRequest request)
     {
         using var httpClient = _httpFactory.CreateClient();
      
@@ -99,12 +104,19 @@ internal class BinanceConnector : IBinanceConnector
     }
     
     /// <summary>
-    /// Получить общую сумму монет на спотовом аккаунте
+    /// GET /api/v3/account (HMAC SHA256)
     /// </summary>
     /// <returns></returns>
-    public decimal GetTotalAmount(Coin coin)
+    public async Task<AccountInformationResponse> GetAccountInformation()
     {
-        return 0;
+        using var httpClient = _httpFactory.CreateClient();
+
+        var signature = new BinanceHmac(_options.SecretKey); 
+        var account = new SpotAccountTrade(httpClient, signature, apiKey:_options.ApiKey, baseUrl:_options.BaseUri);
+        var response = await account.AccountInformation();
+        var accountInfo = JsonSerializer.Deserialize<AccountInformationResponse>(response);
+
+        return accountInfo ?? throw new BinanceConnectorException("Не удалось получить данные о спотовом аккаунте пользователя");
     }
 
     /// <summary>
