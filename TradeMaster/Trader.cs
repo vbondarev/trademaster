@@ -38,7 +38,7 @@ internal class Trader
                 while (totalOrderCount != 0)
                 {
                     //необходимо рассчитать сумму ордера
-                    var orderAmount = _tradeHandler.CalculateOrderAmount(Coin.USDT);
+                    var orderAmount = await _tradeHandler.CalculateOrderAmount(Coin.USDT);
                     
                     //проверка выхода по стоп-лимиту
                     //если начальная сумма базовой монеты больше, чем общая сумма на спотовом кошельке, выходим по проебу
@@ -110,11 +110,11 @@ internal class Trader
                 break;
         }
 
-        var baseCoinTotalAmount = _binanceProvider.GetTotalAmount(baseCoin);
+        var baseCoinTotalAmount = await _binanceProvider.GetTotalAmount(baseCoin);
         var result = new ResultStatisticModel()
         {
             BaseCoinTotal = baseCoinTotalAmount,
-            QuotedCoinTotal = _binanceProvider.GetTotalAmount(quotedCoin),
+            QuotedCoinTotal = await _binanceProvider.GetTotalAmount(quotedCoin),
             ProfitAmount = baseCoinTotalAmount - startAmount
         };
 

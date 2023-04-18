@@ -57,7 +57,7 @@ public class TraderTests
         
         mockConnector
             .Setup(m => m.BuyCoins(Coin.BTC, OrderTypes.Limit, It.IsAny<decimal>(), It.IsAny<decimal>()))
-            .Returns((decimal)0.03566);
+            .Returns(new OrderResultModel(){CoinCount = new decimal(0.03566), Success = true});
         
         var riskHandler = new RiskManagementHandler();
         var tradeHandler = new TradeHandler(mockConnector.Object);
