@@ -1,4 +1,4 @@
-﻿namespace TradeMaster;
+﻿namespace TradeMaster.Handlers;
 
 /// <summary>
 /// Функционал по рассчету риск-менеджмента
@@ -9,8 +9,10 @@ internal class RiskManagementHandler
     /// Рассчет стоимости стоп-лимитного ордера на продажу
     /// </summary>
     /// <param name="bear"></param>
-    /// <param name="orderAmount"></param>
+    /// <param name="startAmount"></param>
     /// <param name="coinCount"></param>
+    /// <param name="profitAmount"></param>
+    /// <param name="buyPrice"></param>
     /// <returns></returns>
     public decimal CalculateStopLimitCellOrder(Trend bear, decimal startAmount, decimal coinCount, decimal profitAmount, decimal buyPrice)
     {

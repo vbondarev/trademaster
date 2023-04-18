@@ -48,7 +48,7 @@ internal class TradeHandler
         DateTimeOffset endDateTime;
         decimal upperCostBound;
         decimal lowerCostBound;
-        RateTypes rateType;
+        RateType rateType;
         var rate = 0d;
         
         while (intervalCount != 0)
@@ -59,18 +59,18 @@ internal class TradeHandler
                 : currentDateTime - (intervalCountValue * (intervalCount - 1));
             upperCostBound = await _binanceProvider.GetMaxPrice(baseCoin, quotedCoin, interval, startDateTime, endDateTime);
             lowerCostBound = await _binanceProvider.GetMinPrice(baseCoin, quotedCoin, interval, startDateTime, endDateTime);
-            rateType = upperCostBound == lowerCostBound ? RateTypes.Neutral :
-                upperCostBound > lowerCostBound ? RateTypes.Negative : RateTypes.Positive;
+            rateType = upperCostBound == lowerCostBound ? RateType.Neutral :
+                upperCostBound > lowerCostBound ? RateType.Negative : RateType.Positive;
             
             switch (rateType)
             {
-                case RateTypes.Neutral:
+                case RateType.Neutral:
                     rate = 0;
                     break;
-                case RateTypes.Negative:
+                case RateType.Negative:
                     rate = (double)(100 - (lowerCostBound / (upperCostBound / 100)));
                     break;
-                case RateTypes.Positive:
+                case RateType.Positive:
                     rate = (double)(100 - (upperCostBound / (lowerCostBound / 100)));
                     break;
             }
