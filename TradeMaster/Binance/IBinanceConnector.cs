@@ -7,23 +7,28 @@ namespace TradeMaster.Binance;
 public interface IBinanceConnector
 {
     /// <summary>
-    /// Запрашиваем статус системы
+    /// Запрос статуса системы
     /// </summary>
     /// <returns></returns>
     Task<SystemStatusResponse> GetSystemStatus();
 
     /// <summary>
-    /// Метод для покупки криптовалюты на Binance
+    /// Создание ордера на покупку
     /// </summary>
-    Task<NewOrderResponse> CreateNewOrder(NewOrderRequest request);
-
+    Task<BuyOrderResponse> CreateBuyOrder(BuyOrderRequest request);
+    
     /// <summary>
-    /// Метод для продажи криптовалюты на Binance
+    /// Создание ордера на продажу
     /// </summary>
     bool CellCoins(Coin coin, OrderType orderType, decimal price, decimal amount);
+    
+    /// <summary>
+    /// Запрос списка всех торговых операций
+    /// </summary>
+    Task<IEnumerable<TradeListResponse>> GetAccountTradeList(TradeListRequest request);
 
     /// <summary>
-    /// Получить свечи за определенный интервал времени 
+    /// Запрос свечей за определенный интервал времени 
     /// </summary>
     /// <param name="request"><see cref="CandlestickDataRequest"/></param>
     /// <returns>Возвращает свечи в виде массива, где элементом массива является свеча  </returns>
@@ -52,13 +57,12 @@ public interface IBinanceConnector
     Task<string[][]> GetCandlestickData(CandlestickDataRequest request);
 
     /// <summary>
-    /// Получить актуальную стоимость и время последней стоимости монеты
+    /// Запрос актуальной стоимости монеты
     /// </summary>
-    /// <returns></returns>
     Task<SymbolPriceTickerResponse> GetSymbolPriceTicker(LastPriceRequest request);
 
     /// <summary>
-    /// Получить общую сумму монет на спотовом аккаунте
+    /// Запрос общей сумму монет
     /// </summary>
     /// <returns></returns>
     Task<AccountInformationResponse> GetAccountInformation();

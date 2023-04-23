@@ -36,8 +36,8 @@ internal class BinanceProvider : IBinanceProvider
     /// </summary>
     public async Task<OrderResultModel> BuyCoins(Coin baseCoin, Coin quotedCoin, OrderType orderType, decimal price, decimal quantity)
     {
-        var request = new NewOrderRequest(baseCoin, quotedCoin, orderType, price, quantity);
-        var response = await _connector.CreateNewOrder(request);
+        var request = new BuyOrderRequest(baseCoin, quotedCoin, orderType, price, quantity);
+        var response = await _connector.CreateBuyOrder(request);
 
         return new OrderResultModel();
     }

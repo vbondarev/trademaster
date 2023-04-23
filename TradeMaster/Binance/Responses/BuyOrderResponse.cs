@@ -2,7 +2,7 @@
 
 namespace TradeMaster.Binance.Responses;
 
-public record NewOrderResponse
+public record BuyOrderResponse
 {
     [JsonPropertyName("symbol")]
     public string Symbol { get; set; } = null!;

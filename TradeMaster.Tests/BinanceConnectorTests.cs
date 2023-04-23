@@ -48,8 +48,11 @@ public class BinanceConnectorTests : IDisposable
     public async Task Request_Should_Return_NewOrderId()
     {
         var connector = _provider.GetRequiredService<IBinanceConnector>();
-        var request = new NewOrderRequest(Coin.BTC, Coin.USDT, OrderType.Limit, 0.001m, 27450.00m);
-        var response = await connector.CreateNewOrder(request);
+        var request = new BuyOrderRequest(Coin.BTC, Coin.USDT, OrderType.Limit, 0.001m, 27450.00m);
+        var response = await connector.CreateBuyOrder(request);
+
+        var tradeListRequest = new TradeListRequest(Coin.BTC, Coin.USDT, response.OrderId);
+        var a = await connector.GetAccountTradeList(tradeListRequest);
 
         Assert.True(response.OrderId > 0);
     }

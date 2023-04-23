@@ -38,7 +38,7 @@ internal class BinanceConnector : IBinanceConnector
     /// <summary>
     /// POST /api/v3/order (HMAC SHA256)
     /// </summary>
-    public async Task<NewOrderResponse> CreateNewOrder(NewOrderRequest request)
+    public async Task<BuyOrderResponse> CreateBuyOrder(BuyOrderRequest request)
     {
         using var httpClient = _httpFactory.CreateClient();
 
@@ -51,8 +51,7 @@ internal class BinanceConnector : IBinanceConnector
             quantity: request.Quantity, 
             price: request.Price,
             timeInForce: request.TimeInForce);
-
-        var orderInfo = JsonSerializer.Deserialize<NewOrderResponse>(response);
+        var orderInfo = JsonSerializer.Deserialize<BuyOrderResponse>(response);
         
         return orderInfo ?? throw new BinanceConnectorException($"Не удалось создать ордер на покупку {request.CoinsPair}");
     }
@@ -64,7 +63,23 @@ internal class BinanceConnector : IBinanceConnector
     {
         return true;
     }
+
     
+    /// <summary>
+    /// GET /api/v3/myTrades (HMAC SHA256)
+    /// </summary>
+    public async Task<IEnumerable<TradeListResponse>> GetAccountTradeList(TradeListRequest request)
+    {
+        using var httpClient = _httpFactory.CreateClient();
+
+        var signature = new BinanceHmac(_options.SecretKey);
+        var account = new SpotAccountTrade(httpClient, signature, apiKey:_options.ApiKey, baseUrl:_options.BaseUri);
+        var response = await account.AccountTradeList(request.CoinsPair, orderId: request.OrderId);
+        var tradeListInfo = JsonSerializer.Deserialize<IEnumerable<TradeListResponse>>(response);
+
+        return tradeListInfo ?? throw new BinanceConnectorException("Не удалось получить список сделок пользователя");
+    }
+
     /// <summary>
     /// GET /api/v3/klines
     /// </summary>

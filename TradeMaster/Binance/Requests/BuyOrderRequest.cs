@@ -6,11 +6,11 @@ using BinanceOrderType = Binance.Spot.Models.OrderType;
 
 namespace TradeMaster.Binance.Requests;
 
-public record NewOrderRequest : BaseRequest
+public record BuyOrderRequest : BaseRequest
 {
     private readonly InternalOrderType _orderType;
 
-    public NewOrderRequest(Coin baseCoin, Coin quotedCoin, InternalOrderType orderType, decimal quantity, decimal price) 
+    public BuyOrderRequest(Coin baseCoin, Coin quotedCoin, InternalOrderType orderType, decimal quantity, decimal price) 
         : base(baseCoin, quotedCoin)
     
     {
