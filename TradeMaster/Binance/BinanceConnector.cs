@@ -24,7 +24,6 @@ internal class BinanceConnector : IBinanceConnector
     /// <summary>
     /// GET /sapi/v1/system/status
     /// </summary>
-    /// <returns></returns>
     public async Task<SystemStatusResponse> GetSystemStatus()
     {
         using var httpClient = _httpFactory.CreateClient();
@@ -37,22 +36,31 @@ internal class BinanceConnector : IBinanceConnector
     }
 
     /// <summary>
-    /// Метод для покупки криптовалюты на Binance
+    /// POST /api/v3/order (HMAC SHA256)
     /// </summary>
-    /// <param name="coin"></param>
-    /// <param name="orderType"></param>
-    /// <param name="price"></param>
-    /// <param name="amount"></param>
-    /// <returns>Возвращает количество купленных монет</returns>
-    public decimal BuyCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount)
+    public async Task<NewOrderResponse> CreateNewOrder(NewOrderRequest request)
     {
-        return 0;
+        using var httpClient = _httpFactory.CreateClient();
+
+        var signature = new BinanceHmac(_options.SecretKey);
+        var account = new SpotAccountTrade(httpClient, signature, apiKey:_options.ApiKey, baseUrl:_options.BaseUri);
+        var response = await account.NewOrder(
+            request.CoinsPair, 
+            request.Side, 
+            request.OrderType, 
+            quantity: request.Quantity, 
+            price: request.Price,
+            timeInForce: request.TimeInForce);
+
+        var orderInfo = JsonSerializer.Deserialize<NewOrderResponse>(response);
+        
+        return orderInfo ?? throw new BinanceConnectorException($"Не удалось создать ордер на покупку {request.CoinsPair}");
     }
 
     /// <summary>
     /// Метод для продажи криптовалюты на Binance
     /// </summary>
-    public bool CellCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount)
+    public bool CellCoins(Coin coin, OrderType orderType, decimal price, decimal amount)
     {
         return true;
     }
@@ -60,7 +68,6 @@ internal class BinanceConnector : IBinanceConnector
     /// <summary>
     /// GET /api/v3/klines
     /// </summary>
-    /// <returns></returns>
     public async Task<string[][]> GetCandlestickData(CandlestickDataRequest request)
     {
         using var httpClient = _httpFactory.CreateClient();
@@ -90,7 +97,6 @@ internal class BinanceConnector : IBinanceConnector
     /// <summary>
     /// GET /api/v3/ticker/price
     /// </summary>
-    /// <returns></returns>
     public async Task<SymbolPriceTickerResponse> GetSymbolPriceTicker(LastPriceRequest request)
     {
         using var httpClient = _httpFactory.CreateClient();
@@ -106,7 +112,6 @@ internal class BinanceConnector : IBinanceConnector
     /// <summary>
     /// GET /api/v3/account (HMAC SHA256)
     /// </summary>
-    /// <returns></returns>
     public async Task<AccountInformationResponse> GetAccountInformation()
     {
         using var httpClient = _httpFactory.CreateClient();
@@ -123,7 +128,6 @@ internal class BinanceConnector : IBinanceConnector
     /// Проверка существования стоп-лимитного ордера на продажу
     /// </summary>
     /// <param name="coin"></param>
-    /// <returns></returns>
     public bool CellStopLimitOrderCheck(Coin coin)
     {
         return true;
@@ -133,7 +137,6 @@ internal class BinanceConnector : IBinanceConnector
     /// Удаление существующего стоп-лимитного ордера на продажу
     /// </summary>
     /// <param name="btc"></param>
-    /// <returns></returns>
     public bool DeleteCellStopLimitOrder(Coin btc)
     {
         return true;

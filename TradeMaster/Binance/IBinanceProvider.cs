@@ -15,12 +15,12 @@ public interface IBinanceProvider
     /// <summary>
     /// Метод для покупки криптовалюты на Binance
     /// </summary>
-    OrderResultModel BuyCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount);
+    Task<OrderResultModel> BuyCoins(Coin baseCoin, Coin quotedCoin, OrderType orderType, decimal quantity, decimal price);
 
     /// <summary>
     /// Метод для продажи криптовалюты на Binance
     /// </summary>
-    OrderResultModel CellCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount);
+    OrderResultModel CellCoins(Coin coin, OrderType orderType, decimal price, decimal amount);
 
     /// <summary>
     /// Получить максимальную стоимость за определенный интервал

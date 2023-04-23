@@ -15,12 +15,12 @@ public interface IBinanceConnector
     /// <summary>
     /// Метод для покупки криптовалюты на Binance
     /// </summary>
-    decimal BuyCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount);
+    Task<NewOrderResponse> CreateNewOrder(NewOrderRequest request);
 
     /// <summary>
     /// Метод для продажи криптовалюты на Binance
     /// </summary>
-    bool CellCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount);
+    bool CellCoins(Coin coin, OrderType orderType, decimal price, decimal amount);
 
     /// <summary>
     /// Получить свечи за определенный интервал времени 

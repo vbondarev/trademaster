@@ -4,25 +4,20 @@ using BinanceInterval = Binance.Spot.Models.Interval;
 
 namespace TradeMaster.Binance.Requests;
 
-public record CandlestickDataRequest
+public record CandlestickDataRequest : BaseRequest
 {
-    private readonly Coin _baseCoin;
-    private readonly Coin _quotedCoin;
     private readonly Interval _interval;
     private readonly DateTimeOffset _startTime;
     private readonly DateTimeOffset _endTime;
 
-    public CandlestickDataRequest(Coin baseCoin, Coin quotedCoin, Interval interval, DateTimeOffset startTime, DateTimeOffset endTime)
+    public CandlestickDataRequest(Coin baseCoin, Coin quotedCoin, Interval interval, DateTimeOffset startTime, DateTimeOffset endTime) 
+        : base(baseCoin, quotedCoin)
     {
-        _baseCoin = baseCoin;
-        _quotedCoin = quotedCoin;
         _interval = interval;
         _startTime = startTime;
         _endTime = endTime;
     }
 
-    public string CoinsPair => $"{_baseCoin}{_quotedCoin}".ToUpperInvariant();
-    
     public long StartTime => _startTime.ToUnixTimeMilliseconds();
     
     public long EndTime => _endTime.ToUnixTimeMilliseconds();

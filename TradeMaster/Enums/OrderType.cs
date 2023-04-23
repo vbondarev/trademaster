@@ -1,9 +1,9 @@
 ﻿namespace TradeMaster.Enums;
 
-public enum OrderTypes
+public enum OrderType
 {
     Limit,
     Market,
-    StopLimit,
-    TrailingStop
+    StopLossLimit,
+    StopLoss
 }

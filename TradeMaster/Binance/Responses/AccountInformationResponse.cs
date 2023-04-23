@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 
-namespace TradeMaster.Binance.Requests;
+namespace TradeMaster.Binance.Responses;
 
 public record AccountInformationResponse
 {

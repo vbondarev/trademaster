@@ -1,4 +1,4 @@
-﻿namespace TradeMaster.Binance.Exceptions;
+﻿namespace TradeMaster.Exceptions;
 
 public class BinanceHighPriceException : Exception
 {

@@ -1,13 +1,13 @@
 ﻿using System.Globalization;
-using TradeMaster.Binance.Exceptions;
 using TradeMaster.Binance.Requests;
 using TradeMaster.Binance.Responses;
 using TradeMaster.Enums;
+using TradeMaster.Exceptions;
 using TradeMaster.Models;
 
 namespace TradeMaster.Binance;
 
-public class BinanceProvider : IBinanceProvider
+internal class BinanceProvider : IBinanceProvider
 {
     private readonly IBinanceConnector _connector;
 
@@ -34,18 +34,15 @@ public class BinanceProvider : IBinanceProvider
     /// Важно мониторить результат выполнения ордера, и как только он будет исполнен, вернуть true в свойстве Success.
     /// Если через 10 минут ордер не исполнен, Антон перезапустит механизм покупки.
     /// </summary>
-    /// <param name="coin"></param>
-    /// <param name="orderType"></param>
-    /// <param name="price"></param>
-    /// <param name="amount"></param>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
-    public OrderResultModel BuyCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount)
+    public async Task<OrderResultModel> BuyCoins(Coin baseCoin, Coin quotedCoin, OrderType orderType, decimal price, decimal quantity)
     {
-        throw new NotImplementedException();
+        var request = new NewOrderRequest(baseCoin, quotedCoin, orderType, price, quantity);
+        var response = await _connector.CreateNewOrder(request);
+
+        return new OrderResultModel();
     }
 
-    public OrderResultModel CellCoins(Coin coin, OrderTypes orderType, decimal price, decimal amount)
+    public OrderResultModel CellCoins(Coin coin, OrderType orderType, decimal price, decimal amount)
     {
         throw new NotImplementedException();
     }

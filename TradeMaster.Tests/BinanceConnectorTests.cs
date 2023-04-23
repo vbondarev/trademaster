@@ -43,6 +43,16 @@ public class BinanceConnectorTests : IDisposable
         var response = await connector.GetCandlestickData(request);
         Assert.NotEmpty(response);
     }
+    
+    [Fact]
+    public async Task Request_Should_Return_NewOrderId()
+    {
+        var connector = _provider.GetRequiredService<IBinanceConnector>();
+        var request = new NewOrderRequest(Coin.BTC, Coin.USDT, OrderType.Limit, 0.001m, 27450.00m);
+        var response = await connector.CreateNewOrder(request);
+
+        Assert.True(response.OrderId > 0);
+    }
 
     public void Dispose()
     {
