@@ -6,20 +6,20 @@ namespace TradeMaster.Binance.Responses;
 public record AccountInformationResponse
 {
     [JsonPropertyName("accountType")]
-    public string AccountType { get; set; } = null!;
+    public string AccountType { get; init; } = null!;
 
     [JsonPropertyName("balances")]
-    public IEnumerable<Balance> Balances { get; set; } = null!;
+    public IEnumerable<Balance> Balances { get; [UsedImplicitly]init; } = null!;
 
     public record Balance
     {
         [JsonPropertyName("asset")]
-        public string Asset { get; [UsedImplicitly]set; } = null!;
+        public string Asset { get; [UsedImplicitly]init; } = null!;
 
         [JsonPropertyName("free")]
-        public string Free { get; [UsedImplicitly]set; } = null!;
+        public string Free { get; [UsedImplicitly]init; } = null!;
 
         [JsonPropertyName("locked")]
-        public string Locked { get; set; } = null!;
+        public string Locked { get; [UsedImplicitly]init; } = null!;
     }
 }
