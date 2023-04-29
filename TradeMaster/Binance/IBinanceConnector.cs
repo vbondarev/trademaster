@@ -18,6 +18,11 @@ public interface IBinanceConnector
     Task<BuyOrderResponse> CreateBuyOrder(BuyOrderRequest request);
     
     /// <summary>
+    /// Запрос ордера
+    /// </summary>
+    Task<QueryOrderResponse> QueryOrder(QueryOrderRequest request);
+    
+    /// <summary>
     /// Создание ордера на продажу
     /// </summary>
     bool CellCoins(Coin coin, OrderType orderType, decimal price, decimal amount);

@@ -48,13 +48,14 @@ public class BinanceConnectorTests : IDisposable
     public async Task Request_Should_Return_NewOrderId()
     {
         var connector = _provider.GetRequiredService<IBinanceConnector>();
-        var request = new BuyOrderRequest(Coin.BTC, Coin.USDT, OrderType.Limit, 0.001m, 27450.00m);
-        var response = await connector.CreateBuyOrder(request);
+        var buyOrderRequest = new BuyOrderRequest(Coin.BTC, Coin.USDT, OrderType.Limit, 0.001m, 29242.72000000m);
+        var buyOrderResponse = await connector.CreateBuyOrder(buyOrderRequest);
 
-        var tradeListRequest = new TradeListRequest(Coin.BTC, Coin.USDT, response.OrderId);
-        var a = await connector.GetAccountTradeList(tradeListRequest);
+        var queryOrderRequest = new QueryOrderRequest(Coin.BTC, Coin.USDT, buyOrderResponse.OrderId);
+        var queryOrderResponse = await connector.QueryOrder(queryOrderRequest);
 
-        Assert.True(response.OrderId > 0);
+        Assert.Equal(buyOrderResponse.OrderId, queryOrderResponse.OrderId);
+        Assert.Equal("BUY", queryOrderResponse.Status);
     }
 
     public void Dispose()

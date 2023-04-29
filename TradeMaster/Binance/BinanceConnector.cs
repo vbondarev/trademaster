@@ -43,17 +43,33 @@ internal class BinanceConnector : IBinanceConnector
         using var httpClient = _httpFactory.CreateClient();
 
         var signature = new BinanceHmac(_options.SecretKey);
-        var account = new SpotAccountTrade(httpClient, signature, apiKey:_options.ApiKey, baseUrl:_options.BaseUri);
-        var response = await account.NewOrder(
+        var spotAccountTrade = new SpotAccountTrade(httpClient, signature, apiKey:_options.ApiKey, baseUrl:_options.BaseUri);
+        var response = await spotAccountTrade.NewOrder(
             request.CoinsPair, 
             request.Side, 
             request.OrderType, 
             quantity: request.Quantity, 
             price: request.Price,
             timeInForce: request.TimeInForce);
-        var orderInfo = JsonSerializer.Deserialize<BuyOrderResponse>(response);
+        var buyOrder = JsonSerializer.Deserialize<BuyOrderResponse>(response);
         
-        return orderInfo ?? throw new BinanceConnectorException($"Не удалось создать ордер на покупку {request.CoinsPair}");
+        return buyOrder ?? throw new BinanceConnectorException($"Не удалось создать ордер на покупку {request.CoinsPair}");
+    }
+
+    /// <summary>
+    /// GET /api/v3/order (HMAC SHA256)
+    /// </summary>
+    public async Task<QueryOrderResponse> QueryOrder(QueryOrderRequest request)
+    {
+        using var httpClient = _httpFactory.CreateClient();
+        
+        var signature = new BinanceHmac(_options.SecretKey);
+        var spotAccountTrade = new SpotAccountTrade(httpClient, signature, apiKey:_options.ApiKey, baseUrl:_options.BaseUri);
+        var response = await spotAccountTrade.QueryOrder(request.CoinsPair, orderId: request.OrderId);
+        var order = JsonSerializer.Deserialize<QueryOrderResponse>(response);
+
+        return order ??
+               throw new BinanceConnectorException($"Не удалось получить информацию по идентификатору ордера {request.OrderId}");
     }
 
     /// <summary>
@@ -73,11 +89,11 @@ internal class BinanceConnector : IBinanceConnector
         using var httpClient = _httpFactory.CreateClient();
 
         var signature = new BinanceHmac(_options.SecretKey);
-        var account = new SpotAccountTrade(httpClient, signature, apiKey:_options.ApiKey, baseUrl:_options.BaseUri);
-        var response = await account.AccountTradeList(request.CoinsPair, orderId: request.OrderId);
-        var tradeListInfo = JsonSerializer.Deserialize<IEnumerable<TradeListResponse>>(response);
+        var spotAccountTrade = new SpotAccountTrade(httpClient, signature, apiKey:_options.ApiKey, baseUrl:_options.BaseUri);
+        var response = await spotAccountTrade.AccountTradeList(request.CoinsPair, orderId: request.OrderId);
+        var tradeList = JsonSerializer.Deserialize<IEnumerable<TradeListResponse>>(response);
 
-        return tradeListInfo ?? throw new BinanceConnectorException("Не удалось получить список сделок пользователя");
+        return tradeList ?? throw new BinanceConnectorException("Не удалось получить список сделок пользователя");
     }
 
     /// <summary>
@@ -132,11 +148,11 @@ internal class BinanceConnector : IBinanceConnector
         using var httpClient = _httpFactory.CreateClient();
 
         var signature = new BinanceHmac(_options.SecretKey); 
-        var account = new SpotAccountTrade(httpClient, signature, apiKey:_options.ApiKey, baseUrl:_options.BaseUri);
-        var response = await account.AccountInformation();
-        var accountInfo = JsonSerializer.Deserialize<AccountInformationResponse>(response);
+        var spotAccountTrade = new SpotAccountTrade(httpClient, signature, apiKey:_options.ApiKey, baseUrl:_options.BaseUri);
+        var response = await spotAccountTrade.AccountInformation();
+        var account = JsonSerializer.Deserialize<AccountInformationResponse>(response);
 
-        return accountInfo ?? throw new BinanceConnectorException("Не удалось получить данные о спотовом аккаунте пользователя");
+        return account ?? throw new BinanceConnectorException("Не удалось получить данные о спотовом аккаунте пользователя");
     }
 
     /// <summary>
