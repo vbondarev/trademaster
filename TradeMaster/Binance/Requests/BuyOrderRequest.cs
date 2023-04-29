@@ -1,7 +1,7 @@
 ﻿using Binance.Spot.Models;
 using TradeMaster.Enums;
 using TradeMaster.Exceptions;
-using InternalOrderType = TradeMaster.Enums.OrderType;
+using InternalOrderType = TradeMaster.Binance.Enums.OrderType;
 using BinanceOrderType = Binance.Spot.Models.OrderType;
 
 namespace TradeMaster.Binance.Requests;
@@ -27,10 +27,10 @@ public record BuyOrderRequest : BaseRequest
         {
             return _orderType switch
             {
-                InternalOrderType.Limit => BinanceOrderType.LIMIT,
-                InternalOrderType.StopLossLimit => BinanceOrderType.STOP_LOSS_LIMIT,
-                InternalOrderType.StopLoss => BinanceOrderType.STOP_LOSS,
-                InternalOrderType.Market => BinanceOrderType.MARKET,
+                InternalOrderType.LIMIT => BinanceOrderType.LIMIT,
+                InternalOrderType.STOP_LOSS_LIMIT => BinanceOrderType.STOP_LOSS_LIMIT,
+                InternalOrderType.STOP_LOSS => BinanceOrderType.STOP_LOSS,
+                InternalOrderType.MARKET => BinanceOrderType.MARKET,
                 _ => throw new BinanceUndefinedOrderType($"Тип ордера {_orderType} не определен")
             };
         }

@@ -2,6 +2,8 @@ using System.Text.Json;
 using Binance.Common;
 using Binance.Spot;
 using Microsoft.Extensions.Options;
+using TradeMaster.Binance.Common;
+using TradeMaster.Binance.Enums;
 using TradeMaster.Binance.Requests;
 using TradeMaster.Binance.Responses;
 using TradeMaster.Enums;
@@ -30,7 +32,7 @@ internal class BinanceConnector : IBinanceConnector
 
         var wallet = new Wallet(httpClient);
         var response = await wallet.SystemStatus();
-        var status = JsonSerializer.Deserialize<SystemStatusResponse>(response);
+        var status = Json.Deserialize<SystemStatusResponse>(response);
 
         return status ?? throw new BinanceConnectorException("Не удалось получить состояние системы");
     }
@@ -51,7 +53,7 @@ internal class BinanceConnector : IBinanceConnector
             quantity: request.Quantity, 
             price: request.Price,
             timeInForce: request.TimeInForce);
-        var buyOrder = JsonSerializer.Deserialize<BuyOrderResponse>(response);
+        var buyOrder = Json.Deserialize<BuyOrderResponse>(response);
         
         return buyOrder ?? throw new BinanceConnectorException($"Не удалось создать ордер на покупку {request.CoinsPair}");
     }
@@ -66,7 +68,7 @@ internal class BinanceConnector : IBinanceConnector
         var signature = new BinanceHmac(_options.SecretKey);
         var spotAccountTrade = new SpotAccountTrade(httpClient, signature, apiKey:_options.ApiKey, baseUrl:_options.BaseUri);
         var response = await spotAccountTrade.QueryOrder(request.CoinsPair, orderId: request.OrderId);
-        var order = JsonSerializer.Deserialize<QueryOrderResponse>(response);
+        var order = Json.Deserialize<QueryOrderResponse>(response);
 
         return order ??
                throw new BinanceConnectorException($"Не удалось получить информацию по идентификатору ордера {request.OrderId}");
@@ -91,7 +93,7 @@ internal class BinanceConnector : IBinanceConnector
         var signature = new BinanceHmac(_options.SecretKey);
         var spotAccountTrade = new SpotAccountTrade(httpClient, signature, apiKey:_options.ApiKey, baseUrl:_options.BaseUri);
         var response = await spotAccountTrade.AccountTradeList(request.CoinsPair, orderId: request.OrderId);
-        var tradeList = JsonSerializer.Deserialize<IEnumerable<TradeListResponse>>(response);
+        var tradeList = Json.Deserialize<IEnumerable<TradeListResponse>>(response);
 
         return tradeList ?? throw new BinanceConnectorException("Не удалось получить список сделок пользователя");
     }
@@ -105,7 +107,7 @@ internal class BinanceConnector : IBinanceConnector
 
         var market = new Market(httpClient);
         var response = await market.KlineCandlestickData(request.CoinsPair, request.Interval, request.StartTime, request.EndTime);
-        var candlesticks = JsonSerializer.Deserialize<object[][]>(response);
+        var candlesticks = Json.Deserialize<object[][]>(response);
 
         if (candlesticks == null)
             throw new BinanceConnectorException(
@@ -134,7 +136,7 @@ internal class BinanceConnector : IBinanceConnector
      
         var market = new Market(httpClient);
         var response = await market.SymbolPriceTicker(request.CoinsPair);
-        var price = JsonSerializer.Deserialize<SymbolPriceTickerResponse>(response);
+        var price = Json.Deserialize<SymbolPriceTickerResponse>(response);
 
         return price ?? throw new BinanceConnectorException(
             $"Не удалось получить актуальную стоимость торговой пары {request.CoinsPair}");
@@ -150,7 +152,7 @@ internal class BinanceConnector : IBinanceConnector
         var signature = new BinanceHmac(_options.SecretKey); 
         var spotAccountTrade = new SpotAccountTrade(httpClient, signature, apiKey:_options.ApiKey, baseUrl:_options.BaseUri);
         var response = await spotAccountTrade.AccountInformation();
-        var account = JsonSerializer.Deserialize<AccountInformationResponse>(response);
+        var account = Json.Deserialize<AccountInformationResponse>(response);
 
         return account ?? throw new BinanceConnectorException("Не удалось получить данные о спотовом аккаунте пользователя");
     }

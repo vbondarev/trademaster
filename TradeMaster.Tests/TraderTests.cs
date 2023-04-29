@@ -1,5 +1,6 @@
 ﻿using Moq;
 using TradeMaster.Binance;
+using TradeMaster.Binance.Enums;
 using TradeMaster.Enums;
 using TradeMaster.Handlers;
 using TradeMaster.Models;
@@ -56,7 +57,7 @@ public class TraderTests
             .ReturnsAsync(28050);
         
         mockConnector
-            .Setup(m => m.BuyCoins(Coin.BTC, Coin.USDT, OrderType.Limit, It.IsAny<decimal>(), It.IsAny<decimal>()))
+            .Setup(m => m.BuyCoins(Coin.BTC, Coin.USDT, OrderType.LIMIT, It.IsAny<decimal>(), It.IsAny<decimal>()))
             .ReturnsAsync(new OrderResultModel{CoinCount = new decimal(0.03566), Success = true});
         
         var riskHandler = new RiskManagementHandler();

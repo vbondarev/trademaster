@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using TradeMaster.Binance;
+using TradeMaster.Binance.Enums;
 using TradeMaster.Binance.Requests;
+using TradeMaster.Binance.Responses.Enums;
 using TradeMaster.Enums;
 using TradeMaster.Extensions;
 using TradeMaster.Models;
@@ -39,23 +41,26 @@ public class BinanceConnectorTests : IDisposable
         var startTime = DateTimeOffset.Now.AddHours(-8);
         var endTime = DateTimeOffset.Now;
         var request = new CandlestickDataRequest(Coin.BTC, Coin.USDT, Interval.Minute, startTime, endTime);
-     
         var response = await connector.GetCandlestickData(request);
+     
         Assert.NotEmpty(response);
     }
     
     [Fact]
-    public async Task Request_Should_Return_NewOrderId()
+    public async Task Request_Should_Return_Created_Order()
     {
         var connector = _provider.GetRequiredService<IBinanceConnector>();
-        var buyOrderRequest = new BuyOrderRequest(Coin.BTC, Coin.USDT, OrderType.Limit, 0.001m, 29242.72000000m);
+        var buyOrderRequest = new BuyOrderRequest(Coin.BTC, Coin.USDT, OrderType.LIMIT, 0.001m, 29242.72000000m);
         var buyOrderResponse = await connector.CreateBuyOrder(buyOrderRequest);
 
+        await Task.Delay(TimeSpan.FromSeconds(5));
+        
         var queryOrderRequest = new QueryOrderRequest(Coin.BTC, Coin.USDT, buyOrderResponse.OrderId);
         var queryOrderResponse = await connector.QueryOrder(queryOrderRequest);
 
         Assert.Equal(buyOrderResponse.OrderId, queryOrderResponse.OrderId);
-        Assert.Equal("BUY", queryOrderResponse.Status);
+        Assert.Equal(OrderStatus.FILLED, queryOrderResponse.Status);
+        Assert.Equal(OrderSide.BUY, queryOrderResponse.Side);
     }
 
     public void Dispose()

@@ -1,5 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using JetBrains.Annotations;
+using TradeMaster.Binance.Enums;
+using TradeMaster.Binance.Responses.Enums;
 
 namespace TradeMaster.Binance.Responses;
 
@@ -31,16 +33,19 @@ public record QueryOrderResponse
 
     [JsonPropertyName("status")]
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public string Status { get; [UsedImplicitly]init; } = null!;
+    public OrderStatus Status { get; [UsedImplicitly]init; }
 
     [JsonPropertyName("timeInForce")]
-    public string TimeInForce { get; [UsedImplicitly]init; } = null!;
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public TimeInForce TimeInForce { get; [UsedImplicitly]init; }
 
     [JsonPropertyName("type")]
-    public string Type { get; [UsedImplicitly]init; } = null!;
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public OrderType Type { get; [UsedImplicitly]init; }
 
     [JsonPropertyName("side")]
-    public string Side { get; [UsedImplicitly]init; } = null!;
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public OrderSide Side { get; [UsedImplicitly]init; }
 
     [JsonPropertyName("stopPrice")]
     public string StopPrice { get; [UsedImplicitly]init; } = null!;

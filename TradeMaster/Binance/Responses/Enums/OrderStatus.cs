@@ -1,4 +1,4 @@
-﻿namespace TradeMaster.Binance.Responses;
+﻿namespace TradeMaster.Binance.Responses.Enums;
 
 public enum OrderStatus
 {

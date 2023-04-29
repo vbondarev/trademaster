@@ -1,4 +1,5 @@
-﻿using TradeMaster.Binance.Requests;
+﻿using TradeMaster.Binance.Enums;
+using TradeMaster.Binance.Requests;
 using TradeMaster.Binance.Responses;
 using TradeMaster.Enums;
 

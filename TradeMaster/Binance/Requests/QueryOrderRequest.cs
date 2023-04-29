@@ -1,5 +1,5 @@
 ﻿using TradeMaster.Enums;
-using InternalOrderType = TradeMaster.Enums.OrderType;
+using InternalOrderType = TradeMaster.Binance.Enums.OrderType;
 using BinanceOrderType = Binance.Spot.Models.OrderType;
 
 namespace TradeMaster.Binance.Requests;

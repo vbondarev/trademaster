@@ -1,4 +1,5 @@
 ﻿using TradeMaster.Binance;
+using TradeMaster.Binance.Enums;
 using TradeMaster.Enums;
 using TradeMaster.Handlers;
 using TradeMaster.Models;
@@ -54,7 +55,7 @@ internal class Trader
 
                     //формируем цену покупки
                     var buyPrice = _tradeHandler.CalculateBuyOrderPrice(Trend.Bear, priceHistory);
-                    var quotedCoinBuyResult = await _binanceProvider.BuyCoins(baseCoin, quotedCoin, OrderType.Limit, buyPrice, orderQuantity);
+                    var quotedCoinBuyResult = await _binanceProvider.BuyCoins(baseCoin, quotedCoin, OrderType.LIMIT, buyPrice, orderQuantity);
                     
                     //ожидание исполнения лимитного ордера на покупку котируемой монеты
                     //Если ордер на покупку не исполнен в течение 10 минут, 
@@ -81,14 +82,14 @@ internal class Trader
                 
                     //Рассчет цены стоп-лимита на продажу
                     var stopLimitCellPrice = _riskManagementHandler.CalculateStopLimitCellOrder(Trend.Bear, startAmount, quotedCoinBuyResult.CoinCount, profitAmount, buyPrice);
-                    var stopLimitCellCount = _binanceProvider.CellCoins(quotedCoin, OrderType.StopLossLimit,
+                    var stopLimitCellCount = _binanceProvider.CellCoins(quotedCoin, OrderType.STOP_LOSS_LIMIT,
                         stopLimitCellPrice, quotedCoinBuyResult.CoinCount);
 
                     //Формирование лимитного ордера на продажу
                     //Сформируем цену продажи котируемой монеты
                     var cellPrice = _tradeHandler.CalculateCellOrderPrice(baseCoin, quotedCoin,Trend.Bear, priceHistory, buyPrice);
                     var quotedCoinCellResult =
-                        _binanceProvider.CellCoins(quotedCoin, OrderType.Limit, cellPrice, quotedCoinBuyResult.CoinCount);
+                        _binanceProvider.CellCoins(quotedCoin, OrderType.LIMIT, cellPrice, quotedCoinBuyResult.CoinCount);
                         
                     //Ожидаем исполнения лимитного ордера на продажу
                     if (quotedCoinCellResult.Success) totalOrderCount--;
