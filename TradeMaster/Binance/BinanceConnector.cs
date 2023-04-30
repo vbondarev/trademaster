@@ -2,7 +2,7 @@ using System.Text.Json;
 using Binance.Common;
 using Binance.Spot;
 using Microsoft.Extensions.Options;
-using TradeMaster.Binance.Common;
+using TradeMaster.Binance.Common.Json;
 using TradeMaster.Binance.Enums;
 using TradeMaster.Binance.Requests;
 using TradeMaster.Binance.Responses;

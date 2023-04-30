@@ -49,8 +49,10 @@ public class BinanceConnectorTests : IDisposable
     [Fact]
     public async Task Request_Should_Return_Created_Order()
     {
+        var price = 29242.72000000m;
+        
         var connector = _provider.GetRequiredService<IBinanceConnector>();
-        var buyOrderRequest = new BuyOrderRequest(Coin.BTC, Coin.USDT, OrderType.LIMIT, 0.001m, 29242.72000000m);
+        var buyOrderRequest = new BuyOrderRequest(Coin.BTC, Coin.USDT, OrderType.LIMIT, 0.001m, price);
         var buyOrderResponse = await connector.CreateBuyOrder(buyOrderRequest);
 
         await Task.Delay(TimeSpan.FromSeconds(5));
@@ -61,6 +63,7 @@ public class BinanceConnectorTests : IDisposable
         Assert.Equal(buyOrderResponse.OrderId, queryOrderResponse.OrderId);
         Assert.Equal(OrderStatus.FILLED, queryOrderResponse.Status);
         Assert.Equal(OrderSide.BUY, queryOrderResponse.Side);
+        Assert.Equal(price, queryOrderResponse.Price);
     }
 
     public void Dispose()

@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using JetBrains.Annotations;
+using TradeMaster.Binance.Common.Json;
 using TradeMaster.Binance.Enums;
 using TradeMaster.Binance.Responses.Enums;
 
@@ -20,16 +21,20 @@ public record QueryOrderResponse
     public string ClientOrderId { get; [UsedImplicitly]init; } = null!;
 
     [JsonPropertyName("price")]
-    public string Price { get; [UsedImplicitly]init; } = null!;
+    [JsonConverter(typeof(StringToDecimalConverter))]
+    public decimal Price { get; [UsedImplicitly]init; }
 
     [JsonPropertyName("origQty")]
-    public string OrigQty { get; [UsedImplicitly]init; } = null!;
+    [JsonConverter(typeof(StringToDecimalConverter))]
+    public decimal OrigQty { get; [UsedImplicitly]init; }
 
     [JsonPropertyName("executedQty")]
-    public string ExecutedQty { get; [UsedImplicitly]init; } = null!;
+    [JsonConverter(typeof(StringToDecimalConverter))]
+    public decimal ExecutedQty { get; [UsedImplicitly]init; }
 
     [JsonPropertyName("cummulativeQuoteQty")]
-    public string CummulativeQuoteQty { get; [UsedImplicitly]init; } = null!;
+    [JsonConverter(typeof(StringToDecimalConverter))]
+    public decimal CummulativeQuoteQty { get; [UsedImplicitly]init; }
 
     [JsonPropertyName("status")]
     [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -48,10 +53,12 @@ public record QueryOrderResponse
     public OrderSide Side { get; [UsedImplicitly]init; }
 
     [JsonPropertyName("stopPrice")]
-    public string StopPrice { get; [UsedImplicitly]init; } = null!;
+    [JsonConverter(typeof(StringToDecimalConverter))]
+    public decimal StopPrice { get; [UsedImplicitly]init; }
 
     [JsonPropertyName("icebergQty")]
-    public string IcebergQty { get; [UsedImplicitly]init; } = null!;
+    [JsonConverter(typeof(StringToDecimalConverter))]
+    public decimal IcebergQty { get; [UsedImplicitly]init; }
 
     [JsonPropertyName("time")]
     public long Time { get; [UsedImplicitly]init; }
@@ -66,7 +73,8 @@ public record QueryOrderResponse
     public long WorkingTime { get; [UsedImplicitly]init; }
     
     [JsonPropertyName("origQuoteOrderQty")]
-    public string OrigQuoteOrderQty { get; [UsedImplicitly]init; } = null!;
+    [JsonConverter(typeof(StringToDecimalConverter))]
+    public decimal OrigQuoteOrderQty { get; [UsedImplicitly]init; }
 
     [JsonPropertyName("selfTradePreventionMode")]
     public string SelfTradePreventionMode { get; [UsedImplicitly]init; } = null!;
