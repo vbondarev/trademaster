@@ -1,12 +1,15 @@
 ﻿using System.Text.Json.Serialization;
 using JetBrains.Annotations;
+using TradeMaster.Binance.Common.Json;
+using TradeMaster.Binance.Enums;
 
 namespace TradeMaster.Binance.Responses;
 
 public record AccountInformationResponse
 {
     [JsonPropertyName("accountType")]
-    public string AccountType { get; init; } = null!;
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public AccountType AccountType { get; init; }
 
     [JsonPropertyName("balances")]
     public IEnumerable<Balance> Balances { get; [UsedImplicitly]init; } = null!;
@@ -17,9 +20,11 @@ public record AccountInformationResponse
         public string Asset { get; [UsedImplicitly]init; } = null!;
 
         [JsonPropertyName("free")]
-        public string Free { get; [UsedImplicitly]init; } = null!;
+        [JsonConverter(typeof(StringToDecimalConverter))]
+        public decimal Free { get; [UsedImplicitly]init; }
 
         [JsonPropertyName("locked")]
-        public string Locked { get; [UsedImplicitly]init; } = null!;
+        [JsonConverter(typeof(StringToDecimalConverter))]
+        public decimal Locked { get; [UsedImplicitly]init; }
     }
 }

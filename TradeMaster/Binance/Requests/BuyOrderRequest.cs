@@ -31,7 +31,7 @@ public record BuyOrderRequest : BaseRequest
                 InternalOrderType.STOP_LOSS_LIMIT => BinanceOrderType.STOP_LOSS_LIMIT,
                 InternalOrderType.STOP_LOSS => BinanceOrderType.STOP_LOSS,
                 InternalOrderType.MARKET => BinanceOrderType.MARKET,
-                _ => throw new BinanceUndefinedOrderType($"Тип ордера {_orderType} не определен")
+                _ => throw new BinanceProviderException($"Тип ордера {_orderType} не определен")
             };
         }
     }

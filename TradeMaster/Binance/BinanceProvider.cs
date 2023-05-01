@@ -1,20 +1,28 @@
 ﻿using System.Globalization;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using TradeMaster.Binance.Enums;
 using TradeMaster.Binance.Requests;
 using TradeMaster.Binance.Responses;
+using TradeMaster.Binance.Responses.Enums;
 using TradeMaster.Enums;
 using TradeMaster.Exceptions;
 using TradeMaster.Models;
+using TradeMaster.Options;
 
 namespace TradeMaster.Binance;
 
 internal class BinanceProvider : IBinanceProvider
 {
     private readonly IBinanceConnector _connector;
+    private readonly TradeOptions _options;
+    private readonly ILogger<BinanceProvider> _logger;
 
-    public BinanceProvider(IBinanceConnector connector)
+    public BinanceProvider(IBinanceConnector connector, IOptions<TradeOptions> options, ILogger<BinanceProvider> logger)
     {
         _connector = connector;
+        _options = options.Value;
+        _logger = logger;
     }
 
     public async Task<BinanceStatus> GetSystemStatus()
@@ -35,12 +43,34 @@ internal class BinanceProvider : IBinanceProvider
     /// Важно мониторить результат выполнения ордера, и как только он будет исполнен, вернуть true в свойстве Success.
     /// Если через 10 минут ордер не исполнен, Антон перезапустит механизм покупки.
     /// </summary>
-    public async Task<OrderResultModel> BuyCoins(Coin baseCoin, Coin quotedCoin, OrderType orderType, decimal price, decimal quantity)
+    public async Task<OrderResultModel> BuyCoins(Coin baseCoin, Coin quotedCoin, OrderType orderType, decimal quantity, decimal price)
     {
-        var request = new BuyOrderRequest(baseCoin, quotedCoin, orderType, price, quantity);
-        var response = await _connector.CreateBuyOrder(request);
+        var account = await _connector.GetAccountInformation();
+        var balance = account.Balances.Single(b => b.Asset == quotedCoin.ToString());
+        var orderCost = price * quantity;
+        if (balance.Free < orderCost)
+        {
+            _logger.LogWarning("На балансе недостаточно средств для покупки {Quantity} {BaseCoin} по цене {Price}", baseCoin, quantity, price);
+            return new OrderResultModel(0, false);
+        }
 
-        return new OrderResultModel();
+        var buyOrderRequest = new BuyOrderRequest(baseCoin, quotedCoin, orderType, quantity, price);
+        var buyOrder = await _connector.CreateBuyOrder(buyOrderRequest);
+
+        var orderQueryRequest = new QueryOrderRequest(baseCoin, quotedCoin, buyOrder.OrderId);
+        QueryOrderResponse order;
+
+        var orderExecutionTime = 1;
+        do
+        {
+            await Task.Delay(TimeSpan.FromSeconds(orderExecutionTime));
+            order = await _connector.QueryOrder(orderQueryRequest);
+
+            orderExecutionTime *= 2;
+        }
+        while (order.Status != OrderStatus.FILLED || orderExecutionTime >= _options.BuyOrderLifeMaxTimeSeconds);
+
+        return new OrderResultModel(order.ExecutedQty, true);
     }
 
     public OrderResultModel CellCoins(Coin coin, OrderType orderType, decimal price, decimal amount)
@@ -71,7 +101,7 @@ internal class BinanceProvider : IBinanceProvider
         {
             if (!decimal.TryParse(candlestick[HighestPriceIndex], NumberStyles.Any, CultureInfo.InvariantCulture, out var highPrice))
             {
-                throw new BinanceHighPriceException("Не удалось получить максимальную цену свечи");
+                throw new BinanceProviderException("Не удалось получить максимальную цену свечи");
             }
 
             highestPrices.Add(highPrice);
@@ -91,7 +121,7 @@ internal class BinanceProvider : IBinanceProvider
         {
             if (!decimal.TryParse(candlestick[LowestPriceIndex], NumberStyles.Any, CultureInfo.InvariantCulture, out var highPrice))
             {
-                throw new BinanceHighPriceException("Не удалось получить минимальную цену свечи");
+                throw new BinanceProviderException("Не удалось получить минимальную цену свечи");
             }
 
             lowestPrices.Add(highPrice);
@@ -113,17 +143,12 @@ internal class BinanceProvider : IBinanceProvider
         throw new InvalidCastException($"Не удалось преобразовать актуальную цену {response.Price} в число");
     }
 
-    public async Task<decimal> GetTotalAmount(Coin coin)
+    public async Task<decimal> GetAccountBalance(Coin coin)
     {
         var response = await _connector.GetAccountInformation();
         var balance = response.Balances.Single(balance => balance.Asset == coin.ToString());
-        
-        if (decimal.TryParse(balance.Free, NumberStyles.Any, CultureInfo.InvariantCulture, out var amount))
-        {
-            return amount;    
-        }
 
-        throw new InvalidCastException($"Не удалось преобразовать баланс кошелька {balance.Free} в число");
+        return balance.Free;
     }
 
     public bool CellStopLimitOrderCheck(Coin coin)

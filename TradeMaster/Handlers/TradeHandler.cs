@@ -141,7 +141,7 @@ internal class TradeHandler
     {
         //Предположим что пока будем закупать на все средства на спотовом аккаунте
         //и также что покупать монеты будем за USDT
-        return await _binanceProvider.GetTotalAmount(coin);
+        return await _binanceProvider.GetAccountBalance(coin);
     }
 
     public decimal CalculateCellOrderPrice(Coin baseCoin, Coin quotedCoin, Trend trend, HistoryPriceModel historyPriceModel, decimal buyPrice)

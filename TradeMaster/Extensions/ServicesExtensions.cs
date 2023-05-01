@@ -16,6 +16,7 @@ public static class ServicesExtensions
             .AddJsonFile("appsettings.json", true, true);
         services.AddSingleton<IConfiguration>(_ => configurationBuilder.Build());
         services.ConfigureOptions<BinanceOptionsSetup>();
+        services.ConfigureOptions<TradingOptionsSetup>();
         
         return services;
     }

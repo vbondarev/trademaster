@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using TradeMaster.Binance;
+using TradeMaster.Binance.Enums;
 using TradeMaster.Binance.Responses;
 using TradeMaster.Enums;
 using TradeMaster.Extensions;
@@ -26,7 +27,7 @@ public class BinanceProviderTests : IDisposable
     }
 
     [Fact]
-    public async Task Request_Should_Return_Status_Normal()
+    public async Task Should_Return_System_Status_Normal()
     {
         var status = await _provider.GetSystemStatus();
         
@@ -34,7 +35,7 @@ public class BinanceProviderTests : IDisposable
     }
     
     [Fact]
-    public async Task Request_Should_Return_Maximum_Price_In_The_Interval()
+    public async Task Should_Return_Maximum_Coins_Price_In_The_Interval()
     {
         var startTime = DateTimeOffset.Now.AddHours(-8);
         var endTime = DateTimeOffset.Now;
@@ -45,7 +46,7 @@ public class BinanceProviderTests : IDisposable
     }
     
     [Fact]
-    public async Task Request_Should_Return_Maximum_Min_In_The_Interval()
+    public async Task Should_Return_Minimum_Coins_Price_In_The_Interval()
     {
         var startTime = DateTimeOffset.Now.AddHours(-8);
         var endTime = DateTimeOffset.Now;
@@ -56,7 +57,7 @@ public class BinanceProviderTests : IDisposable
     }
     
     [Fact]
-    public async Task Request_Should_Return_Last_Price()
+    public async Task Should_Return_Last_Coins_Price()
     {
         var price = await _provider.GetLastPrice(Coin.BTC, Coin.USDT);
         
@@ -64,11 +65,23 @@ public class BinanceProviderTests : IDisposable
     }
     
     [Fact]
-    public async Task Request_Should_Return_Total_Amount()
+    public async Task Should_Return_Account_Total_Coins_Amount()
     {
-        var amount = await _provider.GetTotalAmount(Coin.USDT);
+        var amount = await _provider.GetAccountBalance(Coin.USDT);
         
         Assert.True(amount > 0);
+    }
+    
+    [Fact]
+    public async Task Should_Buy_Coins()
+    {
+        var price = 29242.72000000m;
+        var quantity = 0.001m;
+        var orderType = OrderType.LIMIT;
+        var operation = await _provider.BuyCoins(Coin.BTC, Coin.USDT, orderType, quantity, price);
+        
+        Assert.True(operation.Success);
+        Assert.Equal(quantity, operation.CoinCount);
     }
 
     public void Dispose()

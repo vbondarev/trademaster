@@ -15,7 +15,7 @@ public class TraderTests
     {
         var mockConnector = new Mock<IBinanceProvider>();
         mockConnector
-            .Setup(m => m.GetTotalAmount(Coin.USDT))
+            .Setup(m => m.GetAccountBalance(Coin.USDT))
             .ReturnsAsync(1000);
         
         // mockConnector
@@ -58,7 +58,7 @@ public class TraderTests
         
         mockConnector
             .Setup(m => m.BuyCoins(Coin.BTC, Coin.USDT, OrderType.LIMIT, It.IsAny<decimal>(), It.IsAny<decimal>()))
-            .ReturnsAsync(new OrderResultModel{CoinCount = new decimal(0.03566), Success = true});
+            .ReturnsAsync(new OrderResultModel( 0.03566m, true));
         
         var riskHandler = new RiskManagementHandler();
         var tradeHandler = new TradeHandler(mockConnector.Object);

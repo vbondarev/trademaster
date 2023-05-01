@@ -55,7 +55,7 @@ public interface IBinanceProvider
     /// Получить общую сумму монет на спотовом аккаунте
     /// </summary>
     /// <returns></returns>
-    Task<decimal> GetTotalAmount(Coin coin);
+    Task<decimal> GetAccountBalance(Coin coin);
 
     /// <summary>
     /// Проверка существования стоп-лимитного ордера на продажу

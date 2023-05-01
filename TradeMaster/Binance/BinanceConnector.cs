@@ -107,7 +107,7 @@ internal class BinanceConnector : IBinanceConnector
 
         var market = new Market(httpClient);
         var response = await market.KlineCandlestickData(request.CoinsPair, request.Interval, request.StartTime, request.EndTime);
-        var candlesticks = Json.Deserialize<object[][]>(response);
+        var candlesticks = Json.Deserialize<IEnumerable<object[]>>(response);
 
         if (candlesticks == null)
             throw new BinanceConnectorException(

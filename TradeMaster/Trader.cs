@@ -110,11 +110,11 @@ internal class Trader
                 break;
         }
 
-        var baseCoinTotalAmount = await _binanceProvider.GetTotalAmount(baseCoin);
+        var baseCoinTotalAmount = await _binanceProvider.GetAccountBalance(baseCoin);
         var result = new ResultStatisticModel
         {
             BaseCoinTotal = baseCoinTotalAmount,
-            QuotedCoinTotal = await _binanceProvider.GetTotalAmount(quotedCoin),
+            QuotedCoinTotal = await _binanceProvider.GetAccountBalance(quotedCoin),
             ProfitAmount = baseCoinTotalAmount - startAmount
         };
 
