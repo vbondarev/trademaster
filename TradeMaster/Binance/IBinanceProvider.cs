@@ -21,7 +21,7 @@ public interface IBinanceProvider
     /// <summary>
     /// Метод для продажи криптовалюты на Binance
     /// </summary>
-    OrderResultModel CellCoins(Coin coin, OrderType orderType, decimal price, decimal amount);
+    Task<OrderResultModel> SellCoins(Coin baseCoin, Coin quotedCoin, OrderType orderType, decimal price, decimal quantity);
 
     /// <summary>
     /// Получить максимальную стоимость за определенный интервал

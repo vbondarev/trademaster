@@ -82,14 +82,14 @@ internal class Trader
                 
                     //Рассчет цены стоп-лимита на продажу
                     var stopLimitCellPrice = _riskManagementHandler.CalculateStopLimitCellOrder(Trend.Bear, startAmount, quotedCoinBuyResult.CoinCount, profitAmount, buyPrice);
-                    var stopLimitCellCount = _binanceProvider.CellCoins(quotedCoin, OrderType.STOP_LOSS_LIMIT,
+                    var stopLimitCellCount = _binanceProvider.SellCoins(baseCoin, quotedCoin, OrderType.STOP_LOSS_LIMIT,
                         stopLimitCellPrice, quotedCoinBuyResult.CoinCount);
 
                     //Формирование лимитного ордера на продажу
                     //Сформируем цену продажи котируемой монеты
                     var cellPrice = _tradeHandler.CalculateCellOrderPrice(baseCoin, quotedCoin,Trend.Bear, priceHistory, buyPrice);
-                    var quotedCoinCellResult =
-                        _binanceProvider.CellCoins(quotedCoin, OrderType.LIMIT, cellPrice, quotedCoinBuyResult.CoinCount);
+                    var quotedCoinCellResult = await 
+                        _binanceProvider.SellCoins(baseCoin, quotedCoin, OrderType.LIMIT, cellPrice, quotedCoinBuyResult.CoinCount);
                         
                     //Ожидаем исполнения лимитного ордера на продажу
                     if (quotedCoinCellResult.Success) totalOrderCount--;

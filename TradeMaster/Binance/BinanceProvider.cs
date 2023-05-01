@@ -73,9 +73,25 @@ internal class BinanceProvider : IBinanceProvider
         return new OrderResultModel(order.ExecutedQty, true);
     }
 
-    public OrderResultModel CellCoins(Coin coin, OrderType orderType, decimal price, decimal amount)
+    public async Task<OrderResultModel> SellCoins(Coin baseCoin, Coin quotedCoin, OrderType orderType, decimal quantity, decimal price)
     {
-        throw new NotImplementedException();
+        var sellOrderRequest = new SellOrderRequest(baseCoin, quotedCoin, orderType, quantity, price);
+        var sellOrder = await _connector.CreateSellOrder(sellOrderRequest);
+
+        var orderQueryRequest = new QueryOrderRequest(baseCoin, quotedCoin, sellOrder.OrderId);
+        QueryOrderResponse order;
+
+        var orderExecutionTime = 1;
+        do
+        {
+            await Task.Delay(TimeSpan.FromSeconds(orderExecutionTime));
+            order = await _connector.QueryOrder(orderQueryRequest);
+
+            orderExecutionTime *= 2;
+        }
+        while (order.Status != OrderStatus.FILLED || orderExecutionTime >= _options.SellOrderLifeMaxTimeSeconds);
+
+        return new OrderResultModel(order.ExecutedQty, true);
     }
 
     /// <summary>

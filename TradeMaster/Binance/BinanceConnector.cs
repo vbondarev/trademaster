@@ -3,7 +3,6 @@ using Binance.Common;
 using Binance.Spot;
 using Microsoft.Extensions.Options;
 using TradeMaster.Binance.Common.Json;
-using TradeMaster.Binance.Enums;
 using TradeMaster.Binance.Requests;
 using TradeMaster.Binance.Responses;
 using TradeMaster.Enums;
@@ -57,6 +56,27 @@ internal class BinanceConnector : IBinanceConnector
         
         return buyOrder ?? throw new BinanceConnectorException($"Не удалось создать ордер на покупку {request.CoinsPair}");
     }
+    
+    /// <summary>
+    /// POST /api/v3/order (HMAC SHA256)
+    /// </summary>
+    public async Task<SellOrderResponse> CreateSellOrder(SellOrderRequest request)
+    {
+        using var httpClient = _httpFactory.CreateClient();
+
+        var signature = new BinanceHmac(_options.SecretKey);
+        var spotAccountTrade = new SpotAccountTrade(httpClient, signature, apiKey:_options.ApiKey, baseUrl:_options.BaseUri);
+        var response = await spotAccountTrade.NewOrder(
+            request.CoinsPair, 
+            request.Side, 
+            request.OrderType, 
+            quantity: request.Quantity, 
+            price: request.Price,
+            timeInForce: request.TimeInForce);
+        var sellOrder = Json.Deserialize<SellOrderResponse>(response);
+        
+        return sellOrder ?? throw new BinanceConnectorException($"Не удалось создать ордер на продажу {request.CoinsPair}");
+    }
 
     /// <summary>
     /// GET /api/v3/order (HMAC SHA256)
@@ -73,15 +93,6 @@ internal class BinanceConnector : IBinanceConnector
         return order ??
                throw new BinanceConnectorException($"Не удалось получить информацию по идентификатору ордера {request.OrderId}");
     }
-
-    /// <summary>
-    /// Метод для продажи криптовалюты на Binance
-    /// </summary>
-    public bool CellCoins(Coin coin, OrderType orderType, decimal price, decimal amount)
-    {
-        return true;
-    }
-
     
     /// <summary>
     /// GET /api/v3/myTrades (HMAC SHA256)

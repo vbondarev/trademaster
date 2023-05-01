@@ -27,7 +27,7 @@ public class BinanceProviderTests : IDisposable
     }
 
     [Fact]
-    public async Task Should_Return_System_Status_Normal()
+    public async Task Should_Return_System_Status()
     {
         var status = await _provider.GetSystemStatus();
         
@@ -65,7 +65,7 @@ public class BinanceProviderTests : IDisposable
     }
     
     [Fact]
-    public async Task Should_Return_Account_Total_Coins_Amount()
+    public async Task Should_Return_Account_Balance()
     {
         var amount = await _provider.GetAccountBalance(Coin.USDT);
         
@@ -75,10 +75,22 @@ public class BinanceProviderTests : IDisposable
     [Fact]
     public async Task Should_Buy_Coins()
     {
-        var price = 29242.72000000m;
+        var price = (await _provider.GetLastPrice(Coin.BTC, Coin.USDT)).Price;
         var quantity = 0.001m;
         var orderType = OrderType.LIMIT;
         var operation = await _provider.BuyCoins(Coin.BTC, Coin.USDT, orderType, quantity, price);
+        
+        Assert.True(operation.Success);
+        Assert.Equal(quantity, operation.CoinCount);
+    }
+    
+    [Fact]
+    public async Task Should_Sell_Coins()
+    {
+        var price = (await _provider.GetLastPrice(Coin.BTC, Coin.USDT)).Price;
+        var quantity = 0.001m;
+        var orderType = OrderType.LIMIT;
+        var operation =  await _provider.SellCoins(Coin.BTC, Coin.USDT, orderType, quantity, price);
         
         Assert.True(operation.Success);
         Assert.Equal(quantity, operation.CoinCount);
