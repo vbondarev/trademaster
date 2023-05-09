@@ -27,4 +27,9 @@
     <InternalsVisibleTo Include="$(AssemblyName).Tests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Infrastructure\" />
+    <Folder Include="Integrations\" />
+  </ItemGroup>
+
 </Project>

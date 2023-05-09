@@ -1,9 +1,10 @@
 ﻿using Moq;
-using TradeMaster.Core.Binance;
-using TradeMaster.Core.Binance.Enums;
-using TradeMaster.Core.Enums;
-using TradeMaster.Core.Handlers;
-using TradeMaster.Core.Models;
+using TradeMaster.Core.Integrations.Binance;
+using TradeMaster.Core.Integrations.Binance.Enums;
+using TradeMaster.Core.Trading;
+using TradeMaster.Core.Trading.Enums;
+using TradeMaster.Core.Trading.Handlers;
+using TradeMaster.Core.Trading.Models;
 using Xunit;
 
 namespace TradeMaster.Core.Tests;
