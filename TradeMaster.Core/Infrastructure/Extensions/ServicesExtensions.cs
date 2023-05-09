@@ -42,7 +42,7 @@ public static class ServicesExtensions
         });
         
         services.AddTransient<IBinanceConnector, BinanceConnector>();
-        services.AddTransient<IBinanceProvider, BinanceProvider>();
+        services.AddScoped<IBinanceProvider, BinanceProvider>();
         return services;
     }
 }
