@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeMaster", "TradeMaster\TradeMaster.csproj", "{569F65D7-1FF0-423B-806C-476337CE7B4E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeMaster.Core", "TradeMaster.Core\TradeMaster.Core.csproj", "{569F65D7-1FF0-423B-806C-476337CE7B4E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeMaster.Tests", "TradeMaster.Tests\TradeMaster.Tests.csproj", "{013A1B89-8903-4D4B-8C44-D3BC08840DA4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeMaster.Core.Tests", "TradeMaster.Core.Tests\TradeMaster.Core.Tests.csproj", "{013A1B89-8903-4D4B-8C44-D3BC08840DA4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
