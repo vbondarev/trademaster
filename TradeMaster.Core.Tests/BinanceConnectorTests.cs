@@ -1,11 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using TradeMaster.Core.Binance;
-using TradeMaster.Core.Binance.Enums;
-using TradeMaster.Core.Binance.Requests;
-using TradeMaster.Core.Binance.Responses.Enums;
-using TradeMaster.Core.Enums;
-using TradeMaster.Core.Extensions;
-using TradeMaster.Core.Models;
+using TradeMaster.Core.Infrastructure.Extensions;
+using TradeMaster.Core.Integrations.Binance;
+using TradeMaster.Core.Integrations.Binance.Enums;
+using TradeMaster.Core.Integrations.Binance.Requests;
+using TradeMaster.Core.Integrations.Binance.Responses.Enums;
+using TradeMaster.Core.Trading.Enums;
+using TradeMaster.Core.Trading.Models;
 using Xunit;
 
 namespace TradeMaster.Core.Tests;
