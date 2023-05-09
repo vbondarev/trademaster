@@ -1,5 +1,4 @@
 ﻿using Moq;
-using TradeMaster.Core.Binance;
 using TradeMaster.Core.Integrations.Binance;
 using TradeMaster.Core.Integrations.Binance.Enums;
 using TradeMaster.Core.Trading;

@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using TradeMaster.Core.Binance;
 using TradeMaster.Core.Infrastructure.Extensions;
 using TradeMaster.Core.Integrations.Binance;
 using TradeMaster.Core.Integrations.Binance.Enums;
