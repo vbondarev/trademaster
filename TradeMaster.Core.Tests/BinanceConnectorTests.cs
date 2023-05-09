@@ -81,6 +81,24 @@ public class BinanceConnectorTests : IDisposable
         Assert.Equal(OrderSide.SELL, queryOrderResponse.Side);
         Assert.Equal(price, queryOrderResponse.Price);
     }
+    
+    [Fact]
+    public async Task Request_Should_Cancel_Order()
+    {
+        var price = 25242.72000000m;
+        
+        var connector = _provider.GetRequiredService<IBinanceConnector>();
+        var buyOrderRequest = new BuyOrderRequest(Coin.BTC, Coin.USDT, OrderType.LIMIT, 0.001m, price);
+        var buyOrderResponse = await connector.CreateBuyOrder(buyOrderRequest);
+
+        var cancelOrderRequest = new CancelOrderRequest(Coin.BTC, Coin.USDT, buyOrderResponse.OrderId);
+        var cancelOrderResponse = await connector.CancelOrder(cancelOrderRequest);
+
+        Assert.Equal(buyOrderResponse.OrderId, cancelOrderResponse.OrderId);
+        Assert.Equal(OrderStatus.CANCELED, cancelOrderResponse.Status);
+        Assert.Equal(OrderSide.BUY, cancelOrderResponse.Side);
+        Assert.Equal(price, cancelOrderResponse.Price);
+    }
 
     public void Dispose()
     {

@@ -25,6 +25,11 @@ public interface IBinanceConnector
     /// Запрос ордера
     /// </summary>
     Task<QueryOrderResponse> QueryOrder(QueryOrderRequest request);
+    
+    /// <summary>
+    /// Отмена ордера
+    /// </summary>
+    Task<CancelOrderResponse> CancelOrder(CancelOrderRequest request);
 
     /// <summary>
     /// Запрос списка всех торговых операций
@@ -77,11 +82,4 @@ public interface IBinanceConnector
     /// <param name="coin"></param>
     /// <returns></returns>
     bool CellStopLimitOrderCheck(Coin coin);
-
-    /// <summary>
-    /// Удаление существующего стоп-лимитного ордера на продажу
-    /// </summary>
-    /// <param name="btc"></param>
-    /// <returns></returns>
-    bool DeleteCellStopLimitOrder(Coin btc);
 }

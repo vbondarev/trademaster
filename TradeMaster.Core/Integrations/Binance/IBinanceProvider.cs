@@ -74,7 +74,5 @@ public interface IBinanceProvider
     /// <summary>
     /// Удаление существующего лимитного ордера на покупку котируемой монеты
     /// </summary>
-    /// <param name="quotedCoin"></param>
-    /// <returns></returns>
-    bool DeleteBuyLimitOrder(Coin quotedCoin);
+    Task<bool> DeleteBuyLimitOrder(Coin baseCoin, Coin quotedCoin);
 }

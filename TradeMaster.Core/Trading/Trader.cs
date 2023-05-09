@@ -62,7 +62,7 @@ internal class Trader
                     //отменяем его, и перезапускаем механизм
                     if (!quotedCoinBuyResult.Success)
                     {
-                        var deleteCellStopLimitOrderResult = _binanceProvider.DeleteBuyLimitOrder(quotedCoin);
+                        var deleteCellStopLimitOrderResult = await _binanceProvider.DeleteBuyLimitOrder(baseCoin, quotedCoin);
                         if (deleteCellStopLimitOrderResult) continue;
                     }
                     

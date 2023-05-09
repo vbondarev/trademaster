@@ -18,6 +18,8 @@ internal class BinanceProvider : IBinanceProvider
     private readonly TradeOptions _options;
     private readonly ILogger<BinanceProvider> _logger;
 
+    private long _orderId;
+
     public BinanceProvider(IBinanceConnector connector, IOptions<TradeOptions> options, ILogger<BinanceProvider> logger)
     {
         _connector = connector;
@@ -37,12 +39,6 @@ internal class BinanceProvider : IBinanceProvider
         };
     }
 
-    /// <summary>
-    /// Метод покупки монеты. В данном методе необходимо реализовать механизм, который вернет успех.
-    /// В случае, если в течение 10 минут ордер на покупку не будет исполнен, необходимо вернуть false в свойстве Success.
-    /// Важно мониторить результат выполнения ордера, и как только он будет исполнен, вернуть true в свойстве Success.
-    /// Если через 10 минут ордер не исполнен, Антон перезапустит механизм покупки.
-    /// </summary>
     public async Task<OrderResultModel> BuyCoins(Coin baseCoin, Coin quotedCoin, OrderType orderType, decimal quantity, decimal price)
     {
         var account = await _connector.GetAccountInformation();
@@ -56,8 +52,8 @@ internal class BinanceProvider : IBinanceProvider
 
         var buyOrderRequest = new BuyOrderRequest(baseCoin, quotedCoin, orderType, quantity, price);
         var buyOrder = await _connector.CreateBuyOrder(buyOrderRequest);
-
         var orderQueryRequest = new QueryOrderRequest(baseCoin, quotedCoin, buyOrder.OrderId);
+
         QueryOrderResponse order;
 
         var orderExecutionTime = 1;
@@ -69,6 +65,8 @@ internal class BinanceProvider : IBinanceProvider
             orderExecutionTime *= 2;
         }
         while (order.Status != OrderStatus.FILLED || orderExecutionTime >= _options.BuyOrderLifeMaxTimeSeconds);
+        
+        _orderId = buyOrder.OrderId;
 
         return new OrderResultModel(order.ExecutedQty, true);
     }
@@ -77,8 +75,8 @@ internal class BinanceProvider : IBinanceProvider
     {
         var sellOrderRequest = new SellOrderRequest(baseCoin, quotedCoin, orderType, quantity, price);
         var sellOrder = await _connector.CreateSellOrder(sellOrderRequest);
-
         var orderQueryRequest = new QueryOrderRequest(baseCoin, quotedCoin, sellOrder.OrderId);
+
         QueryOrderResponse order;
 
         var orderExecutionTime = 1;
@@ -90,19 +88,22 @@ internal class BinanceProvider : IBinanceProvider
             orderExecutionTime *= 2;
         }
         while (order.Status != OrderStatus.FILLED || orderExecutionTime >= _options.SellOrderLifeMaxTimeSeconds);
+        
+        _orderId = sellOrder.OrderId;
 
         return new OrderResultModel(order.ExecutedQty, true);
     }
 
     /// <summary>
-    /// Удаление существующего лимитного ордера на покупку котируемой монеты
+    /// Удаление ордера происходит через его отмену
     /// </summary>
-    /// <param name="quotedCoin"></param>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
-    public bool DeleteBuyLimitOrder(Coin quotedCoin)
+    public async Task<bool> DeleteBuyLimitOrder(Coin baseCoin, Coin quotedCoin)
     {
-        throw new NotImplementedException();
+        var cancelOrderRequest = new CancelOrderRequest(baseCoin, quotedCoin, _orderId);
+        var canceledOrder = await _connector.CancelOrder(cancelOrderRequest);
+
+        if (canceledOrder.Status == OrderStatus.CANCELED) return true;
+        throw new BinanceProviderException($"Не удалось отменить ордер {_orderId}");
     }
     
 

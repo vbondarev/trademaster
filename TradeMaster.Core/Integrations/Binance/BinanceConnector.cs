@@ -2,7 +2,6 @@ using System.Text.Json;
 using Binance.Common;
 using Binance.Spot;
 using Microsoft.Extensions.Options;
-using TradeMaster.Core.Binance.Common.Json;
 using TradeMaster.Core.Integrations.Binance.Common.Json;
 using TradeMaster.Core.Integrations.Binance.Exceptions;
 using TradeMaster.Core.Integrations.Binance.Options;
@@ -179,11 +178,17 @@ internal class BinanceConnector : IBinanceConnector
     }
 
     /// <summary>
-    /// Удаление существующего стоп-лимитного ордера на продажу
+    /// DELETE /api/v3/order (HMAC SHA256)
     /// </summary>
-    /// <param name="btc"></param>
-    public bool DeleteCellStopLimitOrder(Coin btc)
+    public async Task<CancelOrderResponse> CancelOrder(CancelOrderRequest request)
     {
-        return true;
+        using var httpClient = _httpFactory.CreateClient();
+
+        var signature = new BinanceHmac(_options.SecretKey); 
+        var spotAccountTrade = new SpotAccountTrade(httpClient, signature, apiKey:_options.ApiKey, baseUrl:_options.BaseUri);
+        var response = await spotAccountTrade.CancelOrder(request.CoinsPair, orderId: request.OrderId);
+        var canceledOrder = Json.Deserialize<CancelOrderResponse>(response);
+
+        return canceledOrder ?? throw new BinanceConnectorException("Не удалось отменить ордер");
     }
 }
