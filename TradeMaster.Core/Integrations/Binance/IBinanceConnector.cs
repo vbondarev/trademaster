@@ -18,9 +18,15 @@ public interface IBinanceConnector
     Task<BuyOrderResponse> CreateBuyOrder(BuyOrderRequest request);
     
     /// <summary>
-    /// Создание ордера на продажу
+    /// Создание ЛИМИТНОГО ордера на продажу
     /// </summary>
-    Task<SellOrderResponse> CreateSellOrder(SellOrderRequest request);
+    Task<SellOrderResponse> CreateSellLimitOrder(SellLimitOrderRequest request);
+    
+    /// <summary>
+    /// Создание СТОП ЛИМИТНОГО ордера на продажу
+    /// </summary>
+    Task<SellOrderResponse> CreateSellStopLossLimitOrder(SellStopLossLimitOrderRequest request);
+    
     /// <summary>
     /// Запрос ордера
     /// </summary>
@@ -82,4 +88,6 @@ public interface IBinanceConnector
     /// <param name="coin"></param>
     /// <returns></returns>
     bool CellStopLimitOrderCheck(Coin coin);
+
+    Task<IEnumerable<CancelOrderResponse>> CancelAllOpenOrders(CancelAllOpenOrdersRequest request);
 }

@@ -58,7 +58,7 @@ public class TraderTests
             .ReturnsAsync(28050);
         
         mockConnector
-            .Setup(m => m.BuyCoins(Coin.BTC, Coin.USDT, OrderType.LIMIT, It.IsAny<decimal>(), It.IsAny<decimal>()))
+            .Setup(m => m.CreateBuyOrder(Coin.BTC, Coin.USDT, OrderType.LIMIT, It.IsAny<decimal>(), It.IsAny<decimal>()))
             .ReturnsAsync(new OrderResultModel( 0.03566m, true));
         
         var riskHandler = new RiskManagementHandler();
@@ -66,6 +66,6 @@ public class TraderTests
         var trader = new Trader(mockConnector.Object, tradeHandler, riskHandler);
         
         //Необходимо зафиксировать сумму и монету, с которой начнется торговля
-        var result = await trader.StartTrading(Coin.USDT, Coin.BTC, 1000, 10);
+        var result = await trader.StartTrading(Coin.USDT, Coin.BTC, Trend.Bear, 1000, 10);
     }
 }

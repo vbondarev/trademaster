@@ -26,27 +26,27 @@ internal class Trader
     /// <summary>
     /// Начало торговли
     /// </summary>
-    public async Task<ResultStatisticModel> StartTrading(Coin baseCoin, Coin quotedCoin, decimal startAmount, int totalOrderCount)
+    /// <param name="baseCoin">Базовая монета</param>
+    /// <param name="quotedCoin">Котируемая монета</param>
+    /// <param name="trend">Тренд</param>
+    /// <param name="startAmount">Начальная сумма ордера</param>
+    /// <param name="totalOrderCount">Количество монет, которыми будем торговать</param>
+    public async Task<ResultStatisticModel> StartTrading(Coin baseCoin, Coin quotedCoin, Trend trend, decimal startAmount, int totalOrderCount)
     {
-        var trendDefiner = new TrendHandler();
-        
-        //Определяем тренд
-        var currentTrend = trendDefiner.DefineTrend();
-
-        switch (currentTrend)
+        switch (trend)
         {
             case Trend.Bear:
                 while (totalOrderCount != 0)
                 {
                     //необходимо рассчитать сумму ордера
-                    var orderQuantity = await _tradeHandler.CalculateOrderAmount(Coin.USDT);
+                    var orderAmount = await _tradeHandler.CalculateOrderAmount(quotedCoin);
                     
                     //проверка выхода по стоп-лимиту
                     //если начальная сумма базовой монеты больше, чем общая сумма на спотовом кошельке, выходим по проебу
-                    if (orderQuantity > startAmount) break;
+                    if (orderAmount > startAmount) break;
 
                     //получаем сумму заработаных средств
-                    var profitAmount = orderQuantity - startAmount;
+                    var profitAmount = orderAmount - startAmount;
                 
                     //формируем историю изменений цены
                     //пока что возьмем за образец сведения двухчасовой давности, но в дальнейшем
@@ -54,8 +54,8 @@ internal class Trader
                     var priceHistory = await _tradeHandler.GeneratePriceHistory(baseCoin, quotedCoin, Interval.QuarterHour, 8);
 
                     //формируем цену покупки
-                    var buyPrice = _tradeHandler.CalculateBuyOrderPrice(Trend.Bear, priceHistory);
-                    var quotedCoinBuyResult = await _binanceProvider.BuyCoins(baseCoin, quotedCoin, OrderType.LIMIT, buyPrice, orderQuantity);
+                    var buyPrice = _tradeHandler.CalculateBuyOrderPrice(trend, priceHistory);
+                    var quotedCoinBuyResult = await _binanceProvider.CreateBuyOrder(baseCoin, quotedCoin, OrderType.LIMIT, buyPrice, orderAmount);
                     
                     //ожидание исполнения лимитного ордера на покупку котируемой монеты
                     //Если ордер на покупку не исполнен в течение 10 минут, 
@@ -66,30 +66,29 @@ internal class Trader
                         if (deleteCellStopLimitOrderResult) continue;
                     }
                     
-                    //необходимо рассчитать и создать стоп-лимит ордер на продажу
-                    //стоп-лимит должен рассчитываться после покупки монеты
-                    //стоп-лимит должен пересчитываться после каждого лимитного ордера на покупку
-                    //на основе общего баланса и каждый предыдущий существующий должен отменяться
+                    // необходимо рассчитать и создать стоп-лимит ордер на продажу
+                    // стоп-лимит должен рассчитываться после покупки монеты
+                    // стоп-лимит должен пересчитываться после каждого лимитного ордера на покупку
+                    // на основе общего баланса и каждый предыдущий существующий должен отменяться
                 
-                    //если существует стоп-лимитный ордер на продажу, отменяем его
-                    //проверяем существование стоп-лимитного ордера на продажу
-                    var isCellStopLimitOrderExist = _binanceProvider.CellStopLimitOrderCheck(quotedCoin);
+                    // если существует стоп-лимитный ордер на продажу, отменяем его
+                    // проверяем существование стоп-лимитного ордера на продажу
+                    var isCellStopLimitOrderExist = _binanceProvider.GetSellStopLimitOrder(quotedCoin);
                     if (isCellStopLimitOrderExist)
                     {
                         //если существует, удаляем его
-                        var deleteCellStopLimitOrderResult = _binanceProvider.DeleteCellStopLimitOrder(quotedCoin);
+                        var deleteCellStopLimitOrderResult = _binanceProvider.DeleteSellStopLimitOrder(quotedCoin);
                     }
                 
                     //Рассчет цены стоп-лимита на продажу
-                    var stopLimitCellPrice = _riskManagementHandler.CalculateStopLimitCellOrder(Trend.Bear, startAmount, quotedCoinBuyResult.CoinCount, profitAmount, buyPrice);
-                    var stopLimitCellCount = _binanceProvider.SellCoins(baseCoin, quotedCoin, OrderType.STOP_LOSS_LIMIT,
-                        stopLimitCellPrice, quotedCoinBuyResult.CoinCount);
+                    var stopLimitSellPrice = _riskManagementHandler.CalculateSellStopLimitOrder(trend, startAmount, quotedCoinBuyResult.CoinCount, profitAmount, buyPrice);
+                    var stopLimitCellCount = await _binanceProvider.CreateSellStopLossLimitOrder(baseCoin, quotedCoin, stopLimitSellPrice, stopLimitSellPrice, quotedCoinBuyResult.CoinCount);
 
                     //Формирование лимитного ордера на продажу
                     //Сформируем цену продажи котируемой монеты
-                    var cellPrice = _tradeHandler.CalculateCellOrderPrice(baseCoin, quotedCoin,Trend.Bear, priceHistory, buyPrice);
+                    var sellPrice = _tradeHandler.CalculateSellOrderPrice(baseCoin, quotedCoin,trend, priceHistory, buyPrice);
                     var quotedCoinCellResult = await 
-                        _binanceProvider.SellCoins(baseCoin, quotedCoin, OrderType.LIMIT, cellPrice, quotedCoinBuyResult.CoinCount);
+                        _binanceProvider.CreateSellLimitOrder(baseCoin, quotedCoin, sellPrice, quotedCoinBuyResult.CoinCount);
                         
                     //Ожидаем исполнения лимитного ордера на продажу
                     if (quotedCoinCellResult.Success) totalOrderCount--;

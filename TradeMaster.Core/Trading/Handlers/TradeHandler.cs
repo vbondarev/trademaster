@@ -117,7 +117,7 @@ internal class TradeHandler
 
     private decimal CalculateBearBuyOrderPrice(HistoryPriceModel historyPriceModel)
     {
-        //Определяем усредненное значение процентных процентных коэффициентов во временных интервалах
+        //Определяем усредненное значение процентных коэффициентов во временных интервалах
         var averageRate = historyPriceModel.CostLimits.Average(cl => cl.Rate);
         
         //Определяем процентный коэффициент разницы между последней нижней стоимостью в 15-минутном интервале и ценой ордера на покупку
@@ -136,15 +136,15 @@ internal class TradeHandler
     /// <summary>
     /// Метод рассчета суммы ордера
     /// </summary>
-    /// <returns></returns>
+    /// <remarks>
+    /// Предположим что пока будем закупать на все средства на спотовом аккаунте
+    /// </remarks>
     public async Task<decimal> CalculateOrderAmount(Coin coin)
     {
-        //Предположим что пока будем закупать на все средства на спотовом аккаунте
-        //и также что покупать монеты будем за USDT
         return await _binanceProvider.GetAccountBalance(coin);
     }
 
-    public decimal CalculateCellOrderPrice(Coin baseCoin, Coin quotedCoin, Trend trend, HistoryPriceModel historyPriceModel, decimal buyPrice)
+    public decimal CalculateSellOrderPrice(Coin baseCoin, Coin quotedCoin, Trend trend, HistoryPriceModel historyPriceModel, decimal buyPrice)
     {
         return trend switch
         {

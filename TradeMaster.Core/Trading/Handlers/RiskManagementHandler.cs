@@ -16,7 +16,7 @@ internal class RiskManagementHandler
     /// <param name="profitAmount"></param>
     /// <param name="buyPrice"></param>
     /// <returns></returns>
-    public decimal CalculateStopLimitCellOrder(Trend bear, decimal startAmount, decimal coinCount, decimal profitAmount, decimal buyPrice)
+    public decimal CalculateSellStopLimitOrder(Trend bear, decimal startAmount, decimal coinCount, decimal profitAmount, decimal buyPrice)
     {
         //Включаем в риск-менеджмент сумму профита
         var profitCount = profitAmount / buyPrice;

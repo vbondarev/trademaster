@@ -75,25 +75,36 @@ public class BinanceProviderTests : IDisposable
     [Fact]
     public async Task Should_Buy_Coins()
     {
-        var price = (await _provider.GetLastPrice(Coin.BTC, Coin.USDT)).Price;
         var quantity = 0.001m;
+        var price = (await _provider.GetLastPrice(Coin.BTC, Coin.USDT)).Price;
         var orderType = OrderType.LIMIT;
-        var operation = await _provider.BuyCoins(Coin.BTC, Coin.USDT, orderType, quantity, price);
+        var operation = await _provider.CreateBuyOrder(Coin.BTC, Coin.USDT, orderType, quantity, price);
         
         Assert.True(operation.Success);
         Assert.Equal(quantity, operation.CoinCount);
     }
     
     [Fact]
-    public async Task Should_Sell_Coins()
+    public async Task Should_Sell_Coins_Using_Stop_Order()
     {
-        var price = (await _provider.GetLastPrice(Coin.BTC, Coin.USDT)).Price;
         var quantity = 0.001m;
-        var orderType = OrderType.LIMIT;
-        var operation =  await _provider.SellCoins(Coin.BTC, Coin.USDT, orderType, quantity, price);
+        var price = (await _provider.GetLastPrice(Coin.BTC, Coin.USDT)).Price;
+        var operation =  await _provider.CreateSellLimitOrder(Coin.BTC, Coin.USDT, price, quantity);
         
         Assert.True(operation.Success);
         Assert.Equal(quantity, operation.CoinCount);
+    }
+    
+    [Fact]
+    public async Task Should_Sell_Coins_Using_Stop_Loss_Order()
+    {
+        var quantity = 0.001m;
+        var price = (await _provider.GetLastPrice(Coin.BTC, Coin.USDT)).Price;
+        var stopLimitPrice = price - 100m;
+        var operation =  await _provider.CreateSellStopLossLimitOrder(Coin.BTC, Coin.USDT, price, stopLimitPrice, quantity);
+        
+        Assert.True(operation.Success);
+        Assert.Equal(0, operation.CoinCount);
     }
 
     public void Dispose()

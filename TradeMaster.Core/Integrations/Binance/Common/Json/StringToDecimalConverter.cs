@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace TradeMaster.Core.Binance.Common.Json;
+namespace TradeMaster.Core.Integrations.Binance.Common.Json;
 
 internal class StringToDecimalConverter : JsonConverter<decimal>
 {

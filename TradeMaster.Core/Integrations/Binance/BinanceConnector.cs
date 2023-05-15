@@ -49,6 +49,7 @@ internal class BinanceConnector : IBinanceConnector
             request.CoinsPair, 
             request.Side, 
             request.OrderType, 
+            newClientOrderId: request.ClientOrderId,
             quantity: request.Quantity, 
             price: request.Price,
             timeInForce: request.TimeInForce);
@@ -60,7 +61,7 @@ internal class BinanceConnector : IBinanceConnector
     /// <summary>
     /// POST /api/v3/order (HMAC SHA256)
     /// </summary>
-    public async Task<SellOrderResponse> CreateSellOrder(SellOrderRequest request)
+    public async Task<SellOrderResponse> CreateSellLimitOrder(SellLimitOrderRequest request)
     {
         using var httpClient = _httpFactory.CreateClient();
 
@@ -72,6 +73,28 @@ internal class BinanceConnector : IBinanceConnector
             request.OrderType, 
             quantity: request.Quantity, 
             price: request.Price,
+            timeInForce: request.TimeInForce);
+        var sellOrder = Json.Deserialize<SellOrderResponse>(response);
+        
+        return sellOrder ?? throw new BinanceConnectorException($"Не удалось создать ордер на продажу {request.CoinsPair}");
+    }
+    
+    /// <summary>
+    /// POST /api/v3/order (HMAC SHA256)
+    /// </summary>
+    public async Task<SellOrderResponse> CreateSellStopLossLimitOrder(SellStopLossLimitOrderRequest request)
+    {
+        using var httpClient = _httpFactory.CreateClient();
+
+        var signature = new BinanceHmac(_options.SecretKey);
+        var spotAccountTrade = new SpotAccountTrade(httpClient, signature, apiKey:_options.ApiKey, baseUrl:_options.BaseUri);
+        var response = await spotAccountTrade.NewOrder(
+            request.CoinsPair, 
+            request.Side, 
+            request.OrderType, 
+            quantity: request.Quantity, 
+            price: request.Price,
+            stopPrice: request.StopLimitPrice,
             timeInForce: request.TimeInForce);
         var sellOrder = Json.Deserialize<SellOrderResponse>(response);
         
@@ -149,8 +172,7 @@ internal class BinanceConnector : IBinanceConnector
         var response = await market.SymbolPriceTicker(request.CoinsPair);
         var price = Json.Deserialize<SymbolPriceTickerResponse>(response);
 
-        return price ?? throw new BinanceConnectorException(
-            $"Не удалось получить актуальную стоимость торговой пары {request.CoinsPair}");
+        return price ?? throw new BinanceConnectorException($"Не удалось получить актуальную стоимость торговой пары {request.CoinsPair}");
     }
     
     /// <summary>
@@ -175,6 +197,18 @@ internal class BinanceConnector : IBinanceConnector
     public bool CellStopLimitOrderCheck(Coin coin)
     {
         return true;
+    }
+
+    public async Task<IEnumerable<CancelOrderResponse>> CancelAllOpenOrders(CancelAllOpenOrdersRequest request)
+    {
+        using var httpClient = _httpFactory.CreateClient();
+
+        var signature = new BinanceHmac(_options.SecretKey);
+        var spotAccountTrade = new SpotAccountTrade(httpClient, signature, apiKey: _options.ApiKey, baseUrl: _options.BaseUri);
+        var response = await spotAccountTrade.CancelAllOpenOrdersOnASymbol(request.CoinsPair);
+        var canceledOrders = Json.Deserialize<IEnumerable<CancelOrderResponse>>(response);
+
+        return canceledOrders ?? throw new BinanceConnectorException("Не удалось отменить ордера");
     }
 
     /// <summary>

@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using TradeMaster.Core.Binance.Common.Json;
 
 namespace TradeMaster.Core.Integrations.Binance.Common.Json;
 
