@@ -14,14 +14,19 @@ public interface IBinanceProvider
     Task<BinanceStatus> GetSystemStatus();
 
     /// <summary>
-    /// Метод для покупки криптовалюты на Binance
+    /// Метод для создания ордера на продажу
     /// </summary>
-    Task<OrderResultModel> BuyCoins(Coin baseCoin, Coin quotedCoin, OrderType orderType, decimal quantity, decimal price);
+    Task<OrderResultModel> CreateBuyOrder(Coin baseCoin, Coin quotedCoin, OrderType orderType, decimal price, decimal quantity);
 
     /// <summary>
-    /// Метод для продажи криптовалюты на Binance
+    /// Создание ЛИМИТНОГО ордера на продажу
     /// </summary>
-    Task<OrderResultModel> SellCoins(Coin baseCoin, Coin quotedCoin, OrderType orderType, decimal price, decimal quantity);
+    Task<OrderResultModel> CreateSellLimitOrder(Coin baseCoin, Coin quotedCoin, decimal price, decimal quantity);
+    
+    /// <summary>
+    /// Создание СТОП ЛИМИТНОГО ордера на продажу
+    /// </summary>
+    Task<OrderResultModel> CreateSellStopLossLimitOrder(Coin baseCoin, Coin quotedCoin, decimal price, decimal stopLimitPrice, decimal quantity);
 
     /// <summary>
     /// Получить максимальную стоимость за определенный интервал
@@ -62,14 +67,14 @@ public interface IBinanceProvider
     /// </summary>
     /// <param name="coin"></param>
     /// <returns></returns>
-    bool CellStopLimitOrderCheck(Coin coin);
+    bool GetSellStopLimitOrder(Coin coin);
 
     /// <summary>
     /// Удаление существующего стоп-лимитного ордера на продажу
     /// </summary>
     /// <param name="btc"></param>
     /// <returns></returns>
-    bool DeleteCellStopLimitOrder(Coin btc);
+    bool DeleteSellStopLimitOrder(Coin btc);
 
     /// <summary>
     /// Удаление существующего лимитного ордера на покупку котируемой монеты

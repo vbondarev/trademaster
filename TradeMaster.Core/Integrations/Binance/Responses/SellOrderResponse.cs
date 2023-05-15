@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using JetBrains.Annotations;
+using TradeMaster.Core.Integrations.Binance.Common.Json;
 
 namespace TradeMaster.Core.Integrations.Binance.Responses;
 
@@ -16,6 +17,14 @@ public record SellOrderResponse
     
     [JsonPropertyName("clientOrderId")]
     public string ClientOrderId { get; [UsedImplicitly]init; } = null!;
+    
+    [JsonPropertyName("origQty")]
+    [JsonConverter(typeof(StringToDecimalConverter))]
+    public decimal OrigQty { get; [UsedImplicitly]init; }
+    
+    [JsonPropertyName("executedQty")]
+    [JsonConverter(typeof(StringToDecimalConverter))]
+    public decimal ExecutedQty { get; [UsedImplicitly]init; }
     
     [JsonPropertyName("transactTime")]
     public long TransactTime { get; [UsedImplicitly]init; }

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using JetBrains.Annotations;
-using TradeMaster.Core.Binance.Common.Json;
+using TradeMaster.Core.Integrations.Binance.Common.Json;
 using TradeMaster.Core.Integrations.Binance.Enums;
 
 namespace TradeMaster.Core.Integrations.Binance.Responses;

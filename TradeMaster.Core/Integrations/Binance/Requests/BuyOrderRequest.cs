@@ -10,7 +10,7 @@ public record BuyOrderRequest : BaseRequest
 {
     private readonly OrderType _orderType;
 
-    public BuyOrderRequest(Coin baseCoin, Coin quotedCoin, OrderType orderType, decimal quantity, decimal price) 
+    public BuyOrderRequest(Coin baseCoin, Coin quotedCoin, OrderType orderType, decimal price, decimal quantity ) 
         : base(baseCoin, quotedCoin)
     
     {
@@ -18,7 +18,9 @@ public record BuyOrderRequest : BaseRequest
         Price = price;
         Quantity = quantity;
     }
-    
+
+    public string ClientOrderId { get; } = Guid.NewGuid().ToString();
+
     public Side Side { get; } = Side.BUY;
 
     public BinanceOrderType OrderType

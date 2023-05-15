@@ -39,7 +39,7 @@ internal class BinanceProvider : IBinanceProvider
         };
     }
 
-    public async Task<OrderResultModel> BuyCoins(Coin baseCoin, Coin quotedCoin, OrderType orderType, decimal quantity, decimal price)
+    public async Task<OrderResultModel> CreateBuyOrder(Coin baseCoin, Coin quotedCoin, OrderType orderType, decimal price, decimal quantity)
     {
         var account = await _connector.GetAccountInformation();
         var balance = account.Balances.Single(b => b.Asset == quotedCoin.ToString());
@@ -50,7 +50,7 @@ internal class BinanceProvider : IBinanceProvider
             return new OrderResultModel(0, false);
         }
 
-        var buyOrderRequest = new BuyOrderRequest(baseCoin, quotedCoin, orderType, quantity, price);
+        var buyOrderRequest = new BuyOrderRequest(baseCoin, quotedCoin, orderType, price, quantity);
         var buyOrder = await _connector.CreateBuyOrder(buyOrderRequest);
         var orderQueryRequest = new QueryOrderRequest(baseCoin, quotedCoin, buyOrder.OrderId);
 
@@ -71,10 +71,10 @@ internal class BinanceProvider : IBinanceProvider
         return new OrderResultModel(order.ExecutedQty, true);
     }
 
-    public async Task<OrderResultModel> SellCoins(Coin baseCoin, Coin quotedCoin, OrderType orderType, decimal quantity, decimal price)
+    public async Task<OrderResultModel> CreateSellLimitOrder(Coin baseCoin, Coin quotedCoin, decimal price, decimal quantity)
     {
-        var sellOrderRequest = new SellOrderRequest(baseCoin, quotedCoin, orderType, quantity, price);
-        var sellOrder = await _connector.CreateSellOrder(sellOrderRequest);
+        var sellOrderRequest = new SellLimitOrderRequest(baseCoin, quotedCoin, price, quantity);
+        var sellOrder = await _connector.CreateSellLimitOrder(sellOrderRequest);
         var orderQueryRequest = new QueryOrderRequest(baseCoin, quotedCoin, sellOrder.OrderId);
 
         QueryOrderResponse order;
@@ -93,6 +93,14 @@ internal class BinanceProvider : IBinanceProvider
 
         return new OrderResultModel(order.ExecutedQty, true);
     }
+    
+    public async Task<OrderResultModel> CreateSellStopLossLimitOrder(Coin baseCoin, Coin quotedCoin, decimal price, decimal stopLimitPrice, decimal quantity)
+    {
+        var sellOrderRequest = new SellStopLossLimitOrderRequest(baseCoin, quotedCoin, price, stopLimitPrice, quantity);
+        var sellOrder = await _connector.CreateSellStopLossLimitOrder(sellOrderRequest);
+        
+        return new OrderResultModel(sellOrder.ExecutedQty, true);
+    }
 
     /// <summary>
     /// Удаление ордера происходит через его отмену
@@ -105,7 +113,7 @@ internal class BinanceProvider : IBinanceProvider
         if (canceledOrder.Status == OrderStatus.CANCELED) return true;
         throw new BinanceProviderException($"Не удалось отменить ордер {_orderId}");
     }
-    
+
 
     public async Task<decimal> GetMaxPrice(Coin baseCoin, Coin quotedCoin, Interval interval, DateTimeOffset startTime, DateTimeOffset endTime)
     {
@@ -168,12 +176,12 @@ internal class BinanceProvider : IBinanceProvider
         return balance.Free;
     }
 
-    public bool CellStopLimitOrderCheck(Coin coin)
+    public bool GetSellStopLimitOrder(Coin coin)
     {
         throw new NotImplementedException();
     }
 
-    public bool DeleteCellStopLimitOrder(Coin btc)
+    public bool DeleteSellStopLimitOrder(Coin btc)
     {
         throw new NotImplementedException();
     }
