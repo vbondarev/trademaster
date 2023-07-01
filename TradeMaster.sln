@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeMaster.Core", "TradeMa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeMaster.Core.Tests", "TradeMaster.Core.Tests\TradeMaster.Core.Tests.csproj", "{013A1B89-8903-4D4B-8C44-D3BC08840DA4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeMaster.Console", "TradeMaster.Console\TradeMaster.Console.csproj", "{36C19012-8955-41FB-968C-D7C1B2E3F5D8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{013A1B89-8903-4D4B-8C44-D3BC08840DA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{013A1B89-8903-4D4B-8C44-D3BC08840DA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{013A1B89-8903-4D4B-8C44-D3BC08840DA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36C19012-8955-41FB-968C-D7C1B2E3F5D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36C19012-8955-41FB-968C-D7C1B2E3F5D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36C19012-8955-41FB-968C-D7C1B2E3F5D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36C19012-8955-41FB-968C-D7C1B2E3F5D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
