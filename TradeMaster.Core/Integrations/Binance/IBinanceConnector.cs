@@ -82,12 +82,7 @@ public interface IBinanceConnector
     /// <returns></returns>
     Task<AccountInformationResponse> GetAccountInformation();
 
-    /// <summary>
-    /// Проверка существования стоп-лимитного ордера на продажу
-    /// </summary>
-    /// <param name="coin"></param>
-    /// <returns></returns>
-    bool CellStopLimitOrderCheck(Coin coin);
-
     Task<IEnumerable<CancelOrderResponse>> CancelAllOpenOrders(CancelAllOpenOrdersRequest request);
+    
+    Task<IEnumerable<OpenOrderResponse>> GetOpenOrders(OpenOrdersRequest request);
 }

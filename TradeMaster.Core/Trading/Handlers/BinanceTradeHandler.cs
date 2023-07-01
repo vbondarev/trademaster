@@ -1,22 +1,26 @@
+using Microsoft.Extensions.Logging;
 using TradeMaster.Core.Integrations.Binance;
 using TradeMaster.Core.Trading.Enums;
 using TradeMaster.Core.Trading.Models;
 
 namespace TradeMaster.Core.Trading.Handlers;
 
-internal class TradeHandler
+internal class BinanceTradeHandler : IBinanceTradeHandler
 {
     private readonly IBinanceProvider _binanceProvider;
+    private readonly IBinanceConnector _binanceConnector;
+    private readonly ILogger<BinanceTradeHandler> _logger;
 
-    public TradeHandler(IBinanceProvider binanceProvider)
+    private long _currentBuyOrderId;
+    private long _currentSellOrderId;
+
+    public BinanceTradeHandler(IBinanceProvider binanceProvider, IBinanceConnector binanceConnector, ILogger<BinanceTradeHandler> logger)
     {
         _binanceProvider = binanceProvider;
+        _binanceConnector = binanceConnector;
+        _logger = logger;
     }
 
-    /// <summary>
-    /// Метод формирования истории изменений цены в заданом диапазоне
-    /// </summary>
-    /// <returns></returns>
     public async Task<HistoryPriceModel> GeneratePriceHistory(Coin baseCoin, Coin quotedCoin, Interval interval, int intervalCount)
     {
         //Необходимо для интервала на основе количества интервалов рассчитать время, на которое необходимо уменьшить
@@ -37,7 +41,7 @@ internal class TradeHandler
 
         var history = new HistoryPriceModel { Interval = interval, IntervalCount = intervalCount };
 
-        //получаем время последнюй цены монеты
+        //получаем время последней цены монеты
         var lastCoinPrice = await _binanceProvider.GetLastPrice(baseCoin, quotedCoin);
         var currentDateTime = lastCoinPrice.Time;
 
@@ -94,13 +98,13 @@ internal class TradeHandler
         return history;
     }
     
-    public decimal CalculateBuyOrderPrice(Trend trend, HistoryPriceModel historyPriceModel)
+    public decimal CalculateBuyOrderPrice(Trend trend, HistoryPriceModel historyPrice)
     {
         return trend switch
         {
-            Trend.Bear => CalculateBearBuyOrderPrice(historyPriceModel),
-            Trend.Bull => CalculateBullBuyOrderPrice(historyPriceModel),
-            Trend.Flat => CalculateFlatBuyOrderPrice(historyPriceModel),
+            Trend.Bear => CalculateBearBuyOrderPrice(historyPrice),
+            Trend.Bull => CalculateBullBuyOrderPrice(historyPrice),
+            Trend.Flat => CalculateFlatBuyOrderPrice(historyPrice),
             _ => 0
         };
     }
@@ -133,28 +137,78 @@ internal class TradeHandler
         return buyOrderPrice;
     }
 
-    /// <summary>
-    /// Метод рассчета суммы ордера
-    /// </summary>
     /// <remarks>
-    /// Предположим что пока будем закупать на все средства на спотовом аккаунте
+    /// Предположим, что пока будем закупать на все средства на спотовом аккаунте
     /// </remarks>
     public async Task<decimal> CalculateOrderAmount(Coin coin)
     {
         return await _binanceProvider.GetAccountBalance(coin);
     }
 
-    public decimal CalculateSellOrderPrice(Coin baseCoin, Coin quotedCoin, Trend trend, HistoryPriceModel historyPriceModel, decimal buyPrice)
+    public decimal CalculateSellOrderPrice(Coin baseCoin, Coin quotedCoin, Trend trend, HistoryPriceModel historyPriceModel, decimal price)
     {
         return trend switch
         {
-            Trend.Bear => CalculateBearCellOrderPrice(baseCoin, quotedCoin, historyPriceModel, buyPrice),
-            Trend.Bull => CalculateBullCellOrderPrice(baseCoin, quotedCoin, historyPriceModel, buyPrice),
-            Trend.Flat => CalculateFlatCellOrderPrice(baseCoin, quotedCoin, historyPriceModel, buyPrice),
+            Trend.Bear => CalculateBearCellOrderPrice(baseCoin, quotedCoin, historyPriceModel, price),
+            Trend.Bull => CalculateBullCellOrderPrice(baseCoin, quotedCoin, historyPriceModel, price),
+            Trend.Flat => CalculateFlatCellOrderPrice(baseCoin, quotedCoin, historyPriceModel, price),
             _ => 0
         };
     }
-    
+
+    public async Task<OrderOperation> CreateBuyOrder(Coin baseCoin, Coin quotedCoin, decimal price, decimal quantity)
+    {
+        var account = await _binanceConnector.GetAccountInformation();
+        var balance = account.Balances.Single(b => b.Asset == quotedCoin.ToString());
+        var orderCost = price * quantity;
+        if (balance.Free < orderCost)
+        {
+            _logger.LogWarning("На балансе недостаточно средств для покупки {Quantity} {BaseCoin} по цене {Price}", baseCoin, quantity, price);
+            return new OrderOperation(0, 0, false);
+        }
+        
+        var order = await _binanceProvider.CreateBuyLimitOrder(baseCoin, quotedCoin, price, quantity);
+        
+        _currentBuyOrderId = order.Id;
+
+        return new OrderOperation(order.Id, order.ExecutedQty, true);
+    }
+
+    public async Task<OrderOperation> CancelBuyOrder(Coin baseCoin, Coin quotedCoin)
+    {
+        var order = await _binanceProvider.CancelOrder(baseCoin, quotedCoin, _currentBuyOrderId);
+        return new OrderOperation(order.Id, order.ExecutedQty, true);
+    }
+
+    public async Task<OrderOperation> GetSellStopOrder(Coin baseCoin, Coin quotedCoin)
+    {
+        var order = await _binanceProvider.GetSellStopLossLimitOrder(baseCoin, quotedCoin, _currentSellOrderId);
+        return order is null 
+            ? new OrderOperation(0, 0, false) 
+            : new OrderOperation(order.Id, order.ExecutedQty, true);
+    }
+
+    public async Task<OrderOperation> CancelSellStopOrder(Coin baseCoin, Coin quotedCoin)
+    {
+        var order = await _binanceProvider.CancelOrder(baseCoin, quotedCoin, _currentSellOrderId);
+
+        return new OrderOperation(order.Id, order.ExecutedQty, true);
+    }
+
+    public async Task<OrderOperation> CreateSellOrder(Coin baseCoin, Coin quotedCoin, decimal price, decimal stopLimitSellPrice, decimal quantity)
+    {
+        var order = await _binanceProvider.CreateSellStopLossLimitOrder(baseCoin, quotedCoin, price, stopLimitSellPrice, quantity);
+        
+        return new OrderOperation(order.Id, order.ExecutedQty, true);
+    }
+
+    public async Task<OrderOperation> CreateSellStopOrder(Coin baseCoin, Coin quotedCoin, decimal price, decimal quantity)
+    {
+        var order = await _binanceProvider.CreateSellLimitOrder(baseCoin, quotedCoin, price, quantity);
+        
+        return new OrderOperation(order.Id, order.ExecutedQty, true);
+    }
+
     private decimal CalculateFlatCellOrderPrice(Coin baseCoin, Coin quotedCoin, HistoryPriceModel historyPriceModel, decimal buyPrice)
     {
         return 0;
@@ -189,5 +243,4 @@ internal class TradeHandler
 
         return buyOrderPrice;
     }
-
 }

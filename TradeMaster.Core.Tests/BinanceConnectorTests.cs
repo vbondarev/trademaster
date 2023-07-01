@@ -3,7 +3,6 @@ using TradeMaster.Core.Infrastructure.Extensions;
 using TradeMaster.Core.Integrations.Binance;
 using TradeMaster.Core.Integrations.Binance.Enums;
 using TradeMaster.Core.Integrations.Binance.Requests;
-using TradeMaster.Core.Integrations.Binance.Responses.Enums;
 using TradeMaster.Core.Trading.Enums;
 using TradeMaster.Core.Trading.Models;
 using Xunit;
@@ -30,7 +29,7 @@ public class BinanceConnectorTests : IDisposable
     }
 
     [Fact]
-    public async Task Request_Should_System_Status()
+    public async Task Request_Should_Get_System_Status()
     {
         var connector = _provider.GetRequiredService<IBinanceConnector>();
         var response = await connector.GetSystemStatus();
@@ -50,11 +49,11 @@ public class BinanceConnectorTests : IDisposable
     }
     
     [Fact]
-    public async Task Request_Should_Create_Buy_Order()
+    public async Task Request_Should_Create_Buy_Limit_Order()
     {
-        var price = 29242.72000000m;
+        var price = await GetLastPrice(Coin.BTC, Coin.USDT);
         
-        var buyOrderRequest = new BuyOrderRequest(Coin.BTC, Coin.USDT, OrderType.LIMIT, price, 0.001m);
+        var buyOrderRequest = new BuyLimitOrderRequest(Coin.BTC, Coin.USDT, price, 0.001m);
         var buyOrderResponse = await _connector.CreateBuyOrder(buyOrderRequest);
 
         var queryOrderRequest = new QueryOrderRequest(Coin.BTC, Coin.USDT, buyOrderResponse.OrderId);
@@ -69,7 +68,7 @@ public class BinanceConnectorTests : IDisposable
     [Fact]
     public async Task Request_Should_Create_Sell_Limit_Order()
     {
-        var price = 29242.72000000m;
+        var price = await GetLastPrice(Coin.BTC, Coin.USDT);
         
         var sellOrderRequest = new SellLimitOrderRequest(Coin.BTC, Coin.USDT, price, 0.001m);
         var sellOrderResponse = await _connector.CreateSellLimitOrder(sellOrderRequest);
@@ -85,7 +84,7 @@ public class BinanceConnectorTests : IDisposable
     }
     
     [Fact]
-    public async Task Request_Should_Create_Sell_Stop_Limit_Order()
+    public async Task Request_Should_Create_Sell_Stop_Loss_Limit_Order()
     {
         var price = await GetLastPrice(Coin.BTC, Coin.USDT);
         var stopLimitPrice = price - 100m;
@@ -106,10 +105,13 @@ public class BinanceConnectorTests : IDisposable
     [Fact]
     public async Task Request_Should_Cancel_Order()
     {
-        var price = 25242.72000000m;
+        var price = await GetLastPrice(Coin.BTC, Coin.USDT);
+        price += 1m;
         
-        var buyOrderRequest = new BuyOrderRequest(Coin.BTC, Coin.USDT, OrderType.LIMIT, price, 0.001m);
+        var buyOrderRequest = new BuyLimitOrderRequest(Coin.BTC, Coin.USDT, price, 0.001m);
         var buyOrderResponse = await _connector.CreateBuyOrder(buyOrderRequest);
+
+        await Task.Delay(4000);
 
         var cancelOrderRequest = new CancelOrderRequest(Coin.BTC, Coin.USDT, buyOrderResponse.OrderId);
         var cancelOrderResponse = await _connector.CancelOrder(cancelOrderRequest);

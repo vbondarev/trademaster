@@ -73,38 +73,40 @@ public class BinanceProviderTests : IDisposable
     }
     
     [Fact]
-    public async Task Should_Buy_Coins()
+    public async Task Should_Return_Buy_Limit_Order()
     {
         var quantity = 0.001m;
         var price = (await _provider.GetLastPrice(Coin.BTC, Coin.USDT)).Price;
-        var orderType = OrderType.LIMIT;
-        var operation = await _provider.CreateBuyOrder(Coin.BTC, Coin.USDT, orderType, quantity, price);
+        var orderInfo = await _provider.CreateBuyLimitOrder(Coin.BTC, Coin.USDT, price, quantity);
         
-        Assert.True(operation.Success);
-        Assert.Equal(quantity, operation.CoinCount);
+        Assert.Equal(OrderType.LIMIT, orderInfo.Type);
+        Assert.Equal(OrderSide.BUY, orderInfo.Side);
+        Assert.Equal(quantity, orderInfo.ExecutedQty);
     }
     
     [Fact]
-    public async Task Should_Sell_Coins_Using_Stop_Order()
+    public async Task Should_Return_Sell_Limit_Order()
     {
         var quantity = 0.001m;
         var price = (await _provider.GetLastPrice(Coin.BTC, Coin.USDT)).Price;
-        var operation =  await _provider.CreateSellLimitOrder(Coin.BTC, Coin.USDT, price, quantity);
+        var orderInfo =  await _provider.CreateSellLimitOrder(Coin.BTC, Coin.USDT, price, quantity);
         
-        Assert.True(operation.Success);
-        Assert.Equal(quantity, operation.CoinCount);
+        Assert.Equal(OrderType.LIMIT, orderInfo.Type);
+        Assert.Equal(OrderSide.SELL, orderInfo.Side);
+        Assert.Equal(quantity, orderInfo.ExecutedQty);
     }
     
     [Fact]
-    public async Task Should_Sell_Coins_Using_Stop_Loss_Order()
+    public async Task Should_Return_Sell_Stop_Loss_Order()
     {
         var quantity = 0.001m;
         var price = (await _provider.GetLastPrice(Coin.BTC, Coin.USDT)).Price;
         var stopLimitPrice = price - 100m;
-        var operation =  await _provider.CreateSellStopLossLimitOrder(Coin.BTC, Coin.USDT, price, stopLimitPrice, quantity);
+        var orderInfo =  await _provider.CreateSellStopLossLimitOrder(Coin.BTC, Coin.USDT, price, stopLimitPrice, quantity);
         
-        Assert.True(operation.Success);
-        Assert.Equal(0, operation.CoinCount);
+        Assert.Equal(OrderType.STOP_LOSS_LIMIT, orderInfo.Type);
+        Assert.Equal(OrderSide.SELL, orderInfo.Side);
+        Assert.Equal(quantity, orderInfo.ExecutedQty);
     }
 
     public void Dispose()

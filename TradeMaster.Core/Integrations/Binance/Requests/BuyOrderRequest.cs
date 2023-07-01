@@ -6,11 +6,11 @@ using OrderType = TradeMaster.Core.Integrations.Binance.Enums.OrderType;
 
 namespace TradeMaster.Core.Integrations.Binance.Requests;
 
-public record BuyOrderRequest : BaseRequest
+public abstract record BuyOrderRequest : BaseRequest
 {
     private readonly OrderType _orderType;
 
-    public BuyOrderRequest(Coin baseCoin, Coin quotedCoin, OrderType orderType, decimal price, decimal quantity ) 
+    protected BuyOrderRequest(Coin baseCoin, Coin quotedCoin, OrderType orderType, decimal price, decimal quantity ) 
         : base(baseCoin, quotedCoin)
     
     {

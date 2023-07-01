@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using TradeMaster.Core.Integrations.Binance.Common.Json;
+using TradeMaster.Core.Integrations.Binance.Enums;
 
 namespace TradeMaster.Core.Integrations.Binance.Responses;
 
@@ -25,6 +26,18 @@ public record SellOrderResponse
     [JsonPropertyName("executedQty")]
     [JsonConverter(typeof(StringToDecimalConverter))]
     public decimal ExecutedQty { get; [UsedImplicitly]init; }
+    
+    [JsonPropertyName("status")]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public OrderStatus Status { get; [UsedImplicitly]init; }
+    
+    [JsonPropertyName("type")]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public OrderType Type { get; [UsedImplicitly]init; }
+    
+    [JsonPropertyName("side")]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public OrderSide Side { get; [UsedImplicitly]init; }
     
     [JsonPropertyName("transactTime")]
     public long TransactTime { get; [UsedImplicitly]init; }

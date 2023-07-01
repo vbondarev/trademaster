@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using TradeMaster.Core.Infrastructure.Options;
 using TradeMaster.Core.Integrations.Binance;
 using TradeMaster.Core.Integrations.Binance.Options;
+using TradeMaster.Core.Trading.Handlers;
 
 namespace TradeMaster.Core.Infrastructure.Extensions;
 
@@ -34,15 +35,17 @@ public static class ServicesExtensions
     
     public static IServiceCollection AddBinance(this IServiceCollection services)
     {
-        services.AddHttpClient<IBinanceConnector, BinanceConnector>((sp, client) =>
+        services.AddHttpClient("Binance", (sp, client) =>
         {
             var options = sp.GetRequiredService<IOptions<BinanceOptions>>().Value;
             var baseAddress = options.BaseUri;
             client.BaseAddress = new Uri(baseAddress);
         });
         
+        services.AddScoped<BinanceApiAdapter>();
+        services.AddScoped<IBinanceTradeHandler, BinanceTradeHandler>();
         services.AddTransient<IBinanceConnector, BinanceConnector>();
-        services.AddScoped<IBinanceProvider, BinanceProvider>();
+        services.AddTransient<IBinanceProvider, BinanceProvider>();
         return services;
     }
 }
