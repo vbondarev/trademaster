@@ -2,7 +2,6 @@
 using JetBrains.Annotations;
 using TradeMaster.Core.Integrations.Binance.Common.Json;
 using TradeMaster.Core.Integrations.Binance.Enums;
-using TradeMaster.Core.Integrations.Binance.Responses.Enums;
 
 namespace TradeMaster.Core.Integrations.Binance.Responses;
 

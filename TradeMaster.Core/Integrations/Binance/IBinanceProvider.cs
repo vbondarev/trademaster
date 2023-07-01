@@ -1,4 +1,4 @@
-﻿using TradeMaster.Core.Integrations.Binance.Enums;
+﻿using TradeMaster.Core.Integrations.Binance.Dtos;
 using TradeMaster.Core.Integrations.Binance.Responses;
 using TradeMaster.Core.Trading.Enums;
 using TradeMaster.Core.Trading.Models;
@@ -14,19 +14,19 @@ public interface IBinanceProvider
     Task<BinanceStatus> GetSystemStatus();
 
     /// <summary>
-    /// Метод для создания ордера на продажу
+    /// Создание ЛИМИТНОГО ордера на продажу
     /// </summary>
-    Task<OrderResultModel> CreateBuyOrder(Coin baseCoin, Coin quotedCoin, OrderType orderType, decimal price, decimal quantity);
+    Task<OrderInfo> CreateBuyLimitOrder(Coin baseCoin, Coin quotedCoin, decimal price, decimal quantity);
 
     /// <summary>
     /// Создание ЛИМИТНОГО ордера на продажу
     /// </summary>
-    Task<OrderResultModel> CreateSellLimitOrder(Coin baseCoin, Coin quotedCoin, decimal price, decimal quantity);
+    Task<OrderInfo> CreateSellLimitOrder(Coin baseCoin, Coin quotedCoin, decimal price, decimal quantity);
     
     /// <summary>
     /// Создание СТОП ЛИМИТНОГО ордера на продажу
     /// </summary>
-    Task<OrderResultModel> CreateSellStopLossLimitOrder(Coin baseCoin, Coin quotedCoin, decimal price, decimal stopLimitPrice, decimal quantity);
+    Task<OrderInfo> CreateSellStopLossLimitOrder(Coin baseCoin, Coin quotedCoin, decimal price, decimal stopLimitPrice, decimal quantity);
 
     /// <summary>
     /// Получить максимальную стоимость за определенный интервал
@@ -63,21 +63,12 @@ public interface IBinanceProvider
     Task<decimal> GetAccountBalance(Coin coin);
 
     /// <summary>
-    /// Проверка существования стоп-лимитного ордера на продажу
+    /// Проверка существования стоп ордера на продажу
     /// </summary>
-    /// <param name="coin"></param>
-    /// <returns></returns>
-    bool GetSellStopLimitOrder(Coin coin);
-
-    /// <summary>
-    /// Удаление существующего стоп-лимитного ордера на продажу
-    /// </summary>
-    /// <param name="btc"></param>
-    /// <returns></returns>
-    bool DeleteSellStopLimitOrder(Coin btc);
+    Task<OrderInfo?> GetSellStopLossLimitOrder(Coin baseCoin, Coin quotedCoin, long orderId);
 
     /// <summary>
     /// Удаление существующего лимитного ордера на покупку котируемой монеты
     /// </summary>
-    Task<bool> DeleteBuyLimitOrder(Coin baseCoin, Coin quotedCoin);
+    Task<OrderInfo> CancelOrder(Coin baseCoin, Coin quotedCoin, long orderId);
 }

@@ -5,14 +5,14 @@ using TradeMaster.Core.Integrations.Binance.Enums;
 
 namespace TradeMaster.Core.Integrations.Binance.Responses;
 
-public record QueryOrderResponse
+public record OpenOrderResponse
 {
+    [JsonPropertyName("orderId")]
+    public long Id { get; [UsedImplicitly]init; }
+    
     [JsonPropertyName("symbol")]
     public string Symbol { get; [UsedImplicitly]init; } = null!;
 
-    [JsonPropertyName("orderId")]
-    public long OrderId { get; [UsedImplicitly]init; }
-    
     [JsonPropertyName("orderListId")]
     public long OrderListId { get; [UsedImplicitly]init; }
     
