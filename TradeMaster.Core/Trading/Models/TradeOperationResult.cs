@@ -1,22 +1,22 @@
 ﻿namespace TradeMaster.Core.Trading.Models;
 
 /// <summary>
-/// Предварительная модель результатов работы приложения
+/// Результат торговой операции
 /// </summary>
-public class ResultStatisticModel
+public record TradeOperationResult
 {
     /// <summary>
     /// Сумма профита
     /// </summary>
-    public decimal ProfitAmount { get; set; }
+    public decimal ProfitAmount { get; init; }
     
     /// <summary>
     /// Количество базовой монеты
     /// </summary>
-    public decimal BaseCoinTotal { get; set; }
+    public decimal BaseCoinTotal { get; init; }
     
     /// <summary>
     /// Количество котируемой монеты
     /// </summary>
-    public decimal QuotedCoinTotal { get; set; }
+    public decimal QuotedCoinTotal { get; init; }
 }

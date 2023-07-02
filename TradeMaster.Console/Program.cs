@@ -1,14 +1,18 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using TradeMaster.Core.Infrastructure.Extensions;
+using TradeMaster.Core.Trading;
+using TradeMaster.Core.Trading.Enums;
+using TradeMaster.Core.Trading.Strategies;
 
 namespace TradeMaster.Console;
 
 public static class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         Serilog.Debugging.SelfLog.Enable(msg => Debug.WriteLine(msg));
         Serilog.Debugging.SelfLog.Enable(System.Console.Error);
@@ -19,6 +23,18 @@ public static class Program
         try
         {
             using var hosting = CreateHostBuilder(args).Build();
+            var trader = hosting.Services.GetRequiredService<ITrader>();
+
+            await trader.StartTrading(new Dictionary<Trend, TradeParameter>
+            {
+                {
+                    Trend.Bear,
+                    new TradeParameter
+                    {
+                        BaseCoin = Coin.BTC, QuotedCoin = Coin.USDT, TotalOrderCount = 1, StartAmount = 10
+                    }
+                }
+            });
         }
         catch (Exception e)
         {
@@ -26,7 +42,7 @@ public static class Program
         }
         finally
         {
-            Log.CloseAndFlush();
+            await Log.CloseAndFlushAsync();
         }
     }
     

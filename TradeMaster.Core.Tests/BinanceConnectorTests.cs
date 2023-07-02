@@ -17,10 +17,7 @@ public class BinanceConnectorTests : IDisposable
     public BinanceConnectorTests()
     {
         var services = new ServiceCollection();
-        services
-            .AddCustomConfiguration()
-            .AddCustomLogging()
-            .AddBinance();
+        services.AddBinance();
         
         _provider = services.BuildServiceProvider();
         _connector = _provider.GetRequiredService<IBinanceConnector>();
