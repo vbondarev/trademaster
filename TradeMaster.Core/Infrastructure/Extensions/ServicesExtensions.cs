@@ -28,10 +28,9 @@ public static class ServicesExtensions
     
     public static IServiceCollection AddBinance(this IServiceCollection services)
     {
+        AddConfiguration(services);
         AddHttp(services);
         AddServices(services);
-        AddConfiguration(services);
-
         
         return services;
     }
@@ -54,7 +53,9 @@ public static class ServicesExtensions
             new Trader(new Dictionary<Trend, ITrendStrategy>
             {
                 { Trend.Bear, sp.GetRequiredService<BinanceBearTrendStrategy>() },
-            }, sp.GetRequiredService<ILogger<Trader>>()));
+            },
+                sp.GetRequiredService<IBinanceProvider>(),
+                sp.GetRequiredService<ILogger<Trader>>()));
     }
 
     private static void AddHttp(IServiceCollection services)

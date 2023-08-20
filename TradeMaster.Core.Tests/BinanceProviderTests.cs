@@ -17,7 +17,9 @@ public class BinanceProviderTests : IDisposable
     public BinanceProviderTests()
     {
         var services = new ServiceCollection();
-        services.AddBinance();
+        services
+            .AddTestConfiguration()
+            .AddBinance();
         
         _sp = services.BuildServiceProvider();
         _provider = _sp.GetRequiredService<IBinanceProvider>();
