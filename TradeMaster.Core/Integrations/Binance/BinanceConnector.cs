@@ -1,6 +1,8 @@
 using System.Text.Json;
 using Binance.Common;
+using Microsoft.Extensions.Logging;
 using TradeMaster.Core.Integrations.Binance.Common.Json;
+using TradeMaster.Core.Integrations.Binance.Exceptions;
 using TradeMaster.Core.Integrations.Binance.Requests;
 using TradeMaster.Core.Integrations.Binance.Responses;
 
@@ -9,8 +11,13 @@ namespace TradeMaster.Core.Integrations.Binance;
 internal class BinanceConnector : IBinanceConnector
 {
     private readonly BinanceApiAdapter _adapter;
+    private readonly ILogger<BinanceConnector> _logger;
 
-    public BinanceConnector(BinanceApiAdapter adapter) =>_adapter = adapter;
+    public BinanceConnector(BinanceApiAdapter adapter, ILogger<BinanceConnector> logger)
+    {
+        _adapter = adapter;
+        _logger = logger;
+    }
 
     /// <summary>
     /// GET /sapi/v1/system/status
@@ -162,7 +169,7 @@ internal class BinanceConnector : IBinanceConnector
         {
             var spotAccountTrade = _adapter.GetSpotAccountTrade();
             var response = await spotAccountTrade.AccountInformation();
-        
+
             return Json.Deserialize<AccountInformationResponse>(response)!;
         });
     }
@@ -205,15 +212,16 @@ internal class BinanceConnector : IBinanceConnector
         });
     }
     
-    private Task<T> ExecuteRequest<T>(Func<Task<T>> func)
+    private async Task<T> ExecuteRequest<T>(Func<Task<T>> func)
     {
         try
         {
-            return func();
+            return await func();
         }
         catch (BinanceClientException e)
         {
-            throw;
+            _logger.LogError(e, "Code: {Code}, Message: {Message}", e.Code, e.Message);
+            throw new BinanceConnectorException(e.Code, e.Message, e);
         }
     }
 }

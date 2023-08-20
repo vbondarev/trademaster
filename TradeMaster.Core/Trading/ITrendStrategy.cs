@@ -5,5 +5,5 @@ namespace TradeMaster.Core.Trading;
 
 public interface ITrendStrategy
 {
-    Task<TradeOperationResult> Run(TradeParameter strategyParameter);
+    Task<TradeOperationResult> Run(StrategyParameter strategyParameter);
 }

@@ -25,7 +25,7 @@ internal class BinanceBearTrendStrategy : ITrendStrategy
         _logger = logger;
     }
 
-    public async Task<TradeOperationResult> Run(TradeParameter parameter)
+    public async Task<TradeOperationResult> Run(StrategyParameter parameter)
     {
         var trend = Trend.Bear;
         var totalOrderCount = parameter.TotalOrderCount;

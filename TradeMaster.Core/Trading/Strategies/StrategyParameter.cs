@@ -3,9 +3,9 @@
 namespace TradeMaster.Core.Trading.Strategies;
 
 /// <summary>
-/// Параметры для торгового тренда
+/// Параметры для торговой стратегии
 /// </summary>
-public record TradeParameter
+public record StrategyParameter
 {
     public Coin BaseCoin { get; init; }
     
